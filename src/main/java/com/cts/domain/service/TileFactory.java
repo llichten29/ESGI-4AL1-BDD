@@ -8,6 +8,8 @@ import java.util.List;
 
 public class TileFactory {
 
+    private TileFactory() {}
+
     public static List<Tile> createAllTiles() {
         List<Tile> tiles = new ArrayList<>();
         int number = 1;

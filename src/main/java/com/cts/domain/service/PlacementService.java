@@ -1,0 +1,83 @@
+package com.cts.domain.service;
+
+import com.cts.domain.exception.InvalidPlacementException;
+import com.cts.domain.model.Kingdom;
+import com.cts.domain.model.Position;
+import com.cts.domain.model.Terrain;
+import com.cts.domain.model.Tile;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PlacementService {
+
+    public boolean canPlace(Kingdom kingdom, Tile tile, Position posA, Position posB) {
+        try {
+            validate(kingdom, tile, posA, posB);
+            return true;
+        } catch (InvalidPlacementException e) {
+            return false;
+        }
+    }
+
+    public void place(Kingdom kingdom, Tile tile, Position posA, Position posB) {
+        validate(kingdom, tile, posA, posB);
+        kingdom.placeTile(tile, posA, posB);
+    }
+
+    public void validate(Kingdom kingdom, Tile tile, Position posA, Position posB) {
+        if (!withinGrid(posA) || !withinGrid(posB)) {
+            throw new InvalidPlacementException("hors de la grille 5x5");
+        }
+        if (!posA.isAdjacent(posB)) {
+            throw new InvalidPlacementException("les deux cases du domino ne sont pas adjacentes");
+        }
+        if (kingdom.isOccupied(posA) || kingdom.isOccupied(posB)) {
+            throw new InvalidPlacementException("case deja occupee");
+        }
+        if (!hasAdjacentMatch(kingdom, tile, posA, posB)) {
+            throw new InvalidPlacementException("aucun terrain adjacent compatible");
+        }
+    }
+
+    public List<Position[]> findValidPlacements(Kingdom kingdom, Tile tile) {
+        List<Position[]> results = new ArrayList<>();
+
+        for (int x = 0; x < Kingdom.SIZE; x++) {
+            for (int y = 0; y < Kingdom.SIZE; y++) {
+                Position a = new Position(x, y);
+                addValidPlacementsFrom(results, kingdom, tile, a);
+            }
+        }
+        return results;
+    }
+
+    private void addValidPlacementsFrom(List<Position[]> results, Kingdom kingdom, Tile tile, Position a) {
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        for (int[] d : dirs) {
+            Position b = new Position(a.x() + d[0], a.y() + d[1]);
+            if (withinGrid(b) && canPlace(kingdom, tile, a, b)) {
+                results.add(new Position[]{a, b});
+            }
+        }
+    }
+
+    public boolean hasAnyPlacement(Kingdom kingdom, Tile tile) {
+        return !findValidPlacements(kingdom, tile).isEmpty();
+    }
+
+    private boolean withinGrid(Position p) {
+        return p.x() >= 0 && p.x() < Kingdom.SIZE && p.y() >= 0 && p.y() < Kingdom.SIZE;
+    }
+
+    private boolean hasAdjacentMatch(Kingdom kingdom, Tile tile, Position posA, Position posB) {
+        for (Position occupied : kingdom.getOccupiedPositions()) {
+            Terrain occupiedTerrain = kingdom.getCell(occupied).getTerrain();
+            boolean isChateau = occupiedTerrain == Terrain.CHATEAU;
+            if (posA.isAdjacent(occupied) && (isChateau || tile.getCellA().getTerrain() == occupiedTerrain))
+                return true;
+            if (posB.isAdjacent(occupied) && (isChateau || tile.getCellB().getTerrain() == occupiedTerrain))
+                return true;
+        }
+        return false;
+    }
+}

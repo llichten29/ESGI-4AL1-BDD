@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Utils {
 
+    private Utils() {}
+
     public static boolean sameTileOrder(List<Tile> pileA, List<Tile> pileB) {
         if (pileA.size() != pileB.size()) {
             return false;
