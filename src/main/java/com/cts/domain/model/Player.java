@@ -2,6 +2,7 @@ package com.cts.domain.model;
 
 public class Player {
     private final String color;
+    private Tile chosenTile;
 
     public Player(String color) {
         this.color = color;
@@ -9,5 +10,21 @@ public class Player {
 
     public String getColor() {
         return color;
+    }
+
+    public void chooseTile(Tile tile) {
+        this.chosenTile = tile;
+    }
+
+    public Tile getChosenTile() {
+        return chosenTile;
+    }
+
+    public boolean hasChosen() {
+        return chosenTile != null;
+    }
+
+    public void resetChoice() {
+        this.chosenTile = null;
     }
 }
