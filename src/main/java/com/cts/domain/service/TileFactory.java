@@ -37,7 +37,7 @@ public class TileFactory {
         number = addTiles(tiles, number, Terrain.VOLCAN, Terrain.VOLCAN, 1, 1, 2);
         number = addTiles(tiles, number, Terrain.VOLCAN, Terrain.VOLCAN, 2, 0, 2);
         number = addTiles(tiles, number, Terrain.STEPPE, Terrain.STEPPE, 1, 0, 1);
-        number = addTiles(tiles, number, Terrain.LAC, Terrain.LAC, 1, 0, 1);
+        addTiles(tiles, number, Terrain.LAC, Terrain.LAC, 1, 0, 1);
 
         return tiles;
     }
