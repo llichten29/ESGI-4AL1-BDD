@@ -16,11 +16,21 @@ public class SetupSteps {
     private GameService game;
     private GameService otherGame;
     private String errorMessage;
+    private String[] customPlayerNames;
+
+    @Given("les joueurs sont {string}, {string}, {string}, {string}")
+    public void lesJoueursSont(String p1, String p2, String p3, String p4) {
+        customPlayerNames = new String[]{p1, p2, p3, p4};
+    }
 
     @Given("^une partie avec (\\d+) joueurs? et seed (\\d+)$")
     public void unePartieAvecJoueursEtSeed(int playerCount, long seed) {
         try {
-            game = new GameService(playerCount, seed);
+            if (customPlayerNames != null) {
+                game = new GameService(playerCount, seed, customPlayerNames);
+            } else {
+                game = new GameService(playerCount, seed);
+            }
             errorMessage = null;
         } catch (InvalidPlayerCountException e) {
             errorMessage = e.getMessage();

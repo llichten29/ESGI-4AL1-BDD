@@ -19,6 +19,10 @@ public class GameService {
     private int turnNumber;
 
     public GameService(int playerCount, long seed) {
+        this(playerCount, seed, new String[]{"Alice", "Bastien", "Camille", "David"});
+    }
+
+    public GameService(int playerCount, long seed, String[] playerNames) {
         if (playerCount < 3 || playerCount > 4) {
             throw new InvalidPlayerCountException(
                 "une partie necessite 3 ou 4 joueurs"
@@ -32,9 +36,8 @@ public class GameService {
         this.drawPile = new ArrayList<>(allTiles);
 
         this.players = new ArrayList<>();
-        String[] colors = {"rose", "noir", "vert", "bleu"};
         for (int i = 0; i < playerCount; i++) {
-            players.add(new Player(colors[i]));
+            players.add(new Player(playerNames[i]));
         }
 
         prepareNextDraft();
