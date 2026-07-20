@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Draft {
     private final List<Tile> tiles;
@@ -40,7 +39,7 @@ public class Draft {
     public List<Tile> getUnchosenTiles() {
         return tiles.stream()
             .filter(t -> !chosenTileNumbers.contains(t.getNumber()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public int getUnchosenCount() {
