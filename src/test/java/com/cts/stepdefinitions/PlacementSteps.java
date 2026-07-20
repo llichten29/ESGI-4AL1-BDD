@@ -1,12 +1,14 @@
 package com.cts.stepdefinitions;
 
 import com.cts.domain.exception.InvalidPlacementException;
+import com.cts.domain.model.FireToken;
 import com.cts.domain.model.Kingdom;
 import com.cts.domain.model.Position;
 import com.cts.domain.model.Terrain;
 import com.cts.domain.model.Tile;
 import com.cts.domain.model.TileCell;
 import com.cts.domain.service.PlacementService;
+import com.cts.domain.service.VolcanoService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -62,7 +64,9 @@ public class PlacementSteps {
     public void leJoueurPoseUnDomino(String t1, String t2, int x1, int y1, int x2, int y2) {
         Terrain terrainA = parseTerrain(t1);
         Terrain terrainB = parseTerrain(t2);
-        currentTile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
+        int fireA = volcanoFireCount(terrainA, terrainB);
+        int fireB = volcanoFireCount(terrainB, terrainA);
+        currentTile = new Tile(0, new TileCell(terrainA, fireA), new TileCell(terrainB, fireB));
         Position posA = new Position(x1, y1);
         Position posB = new Position(x2, y2);
 
@@ -158,6 +162,31 @@ public class PlacementSteps {
     public void lePlacementRefuseCar(String reason) {
         assertFalse(lastPlacementAccepted, "Le placement aurait du etre refuse");
         assertEquals(reason, lastError);
+    }
+
+    @Then("le joueur recoit un jeton feu de valeur {int}")
+    public void leJoueurRecoitUnJetonFeu(int expectedValue) {
+        assertNotNull(currentTile);
+        List<FireToken> tokens = new VolcanoService().collectFireTokens(currentTile);
+        assertEquals(1, tokens.size());
+        assertEquals(expectedValue, tokens.get(0).getCount());
+    }
+
+    @Then("le joueur ne recoit aucun jeton feu")
+    public void leJoueurNeRecoitAucunJetonFeu() {
+        assertNotNull(currentTile);
+        List<FireToken> tokens = new VolcanoService().collectFireTokens(currentTile);
+        assertTrue(tokens.isEmpty());
+    }
+
+    private int volcanoFireCount(Terrain cell, Terrain other) {
+        if (cell != Terrain.VOLCAN) return 0;
+        return switch (other) {
+            case LAC -> 1;
+            case JUNGLE -> 2;
+            case DESERT -> 3;
+            default -> 0;
+        };
     }
 
     private Terrain parseTerrain(String s) {
