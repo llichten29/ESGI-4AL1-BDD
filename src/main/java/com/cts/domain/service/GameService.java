@@ -6,6 +6,7 @@ import com.cts.domain.model.Player;
 import com.cts.domain.model.Tile;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -40,10 +41,10 @@ public class GameService {
     }
 
     private void prepareNextDraft() {
-        List<Tile> draftTiles = new ArrayList<>();
-        for (int i = 0; i < 4 && !drawPile.isEmpty(); i++) {
-            draftTiles.add(drawPile.remove(0));
-        }
+        int tilesToDraw = Math.min(4, drawPile.size());
+        List<Tile> draftTiles = new ArrayList<>(drawPile.subList(0, tilesToDraw));
+        drawPile.subList(0, tilesToDraw).clear();
+        draftTiles.sort(Comparator.comparingInt(Tile::getNumber));
         currentDraft = new Draft(draftTiles);
         turnNumber++;
     }
