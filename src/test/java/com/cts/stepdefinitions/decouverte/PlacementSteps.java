@@ -35,6 +35,14 @@ public class PlacementSteps {
         assertEquals(Terrain.CHATEAU, world.kingdom.getCell(new Position(x, y)).getTerrain());
     }
 
+    @Given("le joueur a deja pose un domino {word}-{word} en \\({int},{int}\\) et \\({int},{int}\\)")
+    public void leJoueurADejaPoseUnDomino(String t1, String t2, int x1, int y1, int x2, int y2) {
+        Terrain terrainA = parseTerrain(t1);
+        Terrain terrainB = parseTerrain(t2);
+        Tile tile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
+        new PlacementService().place(world.kingdom, tile, new Position(x1, y1), new Position(x2, y2));
+    }
+
     @Given("le joueur a deja pose une {word} en \\({int},{int}\\)")
     public void leJoueurADejaPose(String terrainStr, int x, int y) {
         Terrain terrain = parseTerrain(terrainStr);
