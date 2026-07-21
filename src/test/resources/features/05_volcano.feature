@@ -1,10 +1,12 @@
 Feature: Volcans et jetons Feu
     En tant que joueur
     Je veux recevoir des jetons Feu en posant des dominos volcan
-    Afin de marquer plus de points
+    Et les placer sur mon royaume pour marquer plus de points
 
     Background:
         Given un joueur "Alice" avec la tuile depart en position (2,2)
+
+    # --- Création des jetons Feu (1ère itération) ---
 
     Scenario: Volcan 1 cratere donne un jeton feu
         Given le joueur a deja pose une steppe en (2,1)
@@ -25,3 +27,43 @@ Feature: Volcans et jetons Feu
         Given le joueur a deja pose une steppe en (2,1)
         When le joueur pose un domino steppe-steppe en (2,0) et (1,0)
         Then le joueur ne recoit aucun jeton feu
+
+    # --- Projection des jetons Feu (2ème itération) ---
+
+    Scenario: Projection d'un jeton feu sur la case depart
+        Given un volcan en (2,3) avec feu 2
+        When le joueur place un jeton feu de valeur 2 depuis le volcan en (2,3) sur la case (2,2)
+        Then le jeton feu est place en (2,2)
+
+    Scenario: Portee d'un jeton feu selon sa valeur
+        Given un volcan en (2,3) avec feu 1
+        Then le jeton feu 1 a une portee de 3
+
+    Scenario: Placement d'un jeton feu hors de portee
+        Given un volcan en (2,3) avec feu 1
+        When le joueur tente de placer un jeton feu de valeur 1 depuis le volcan en (2,3) sur la case (0,0)
+        Then le jeton feu ne peut pas etre place
+
+    Scenario: Pas de projection sur une case volcan
+        Given un volcan en (2,3) avec feu 3
+        When le joueur tente de placer un jeton feu de valeur 3 depuis le volcan en (2,3) sur la case (2,3)
+        Then le jeton feu ne peut pas etre place
+
+    Scenario: Pas de projection sur une case avec icone feu
+        Given un volcan en (2,3) avec feu 3
+        And une case jungle en (1,2) avec icone feu 3
+        When le joueur tente de placer un jeton feu de valeur 3 depuis le volcan en (2,3) sur la case (1,2)
+        Then le jeton feu ne peut pas etre place
+
+    Scenario: Pas de deux jetons feu sur la meme case
+        Given un volcan en (2,3) avec feu 2
+        When le joueur place un jeton feu de valeur 2 depuis le volcan en (2,3) sur la case (2,2)
+        And le joueur tente de placer un jeton feu de valeur 2 depuis le volcan en (2,3) sur la case (2,2)
+        Then le jeton feu ne peut pas etre place
+
+    Scenario: Defausse d'un jeton feu
+        Given un volcan en (2,3) avec feu 3
+        And un jeton feu de valeur 3
+        And un jeton feu de valeur 3 place en (2,2)
+        When le joueur tente de placer le jeton feu depuis le volcan en (2,3)
+        Then le jeton feu est defausse

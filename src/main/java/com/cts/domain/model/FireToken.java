@@ -10,4 +10,8 @@ public class FireToken {
     public int getCount() {
         return count;
     }
+
+    public int getRange() {
+        return 4 - count;
+    }
 }
