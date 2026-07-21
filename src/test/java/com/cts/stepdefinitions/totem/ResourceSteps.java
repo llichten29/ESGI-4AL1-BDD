@@ -40,6 +40,11 @@ public class ResourceSteps {
         addPlayerResource("Alice", resource, 1);
     }
 
+    @Given("une case {word} en \\({int},{int}\\) sans icone feu contenant une ressource {word}")
+    public void uneCaseSansIconeFeuContenantUneRessource(String terrainStr, int x, int y, String resourceStr) {
+        uneCaseContenantUneRessource(terrainStr, x, y, resourceStr);
+    }
+
     @Given("le joueur recoit un domino {word}-{word} avec une ressource {word}")
     public void leJoueurRecoitUnDominoAvecUneRessource(String t1, String t2, String resourceStr) {
         Resource resource = parseResource(resourceStr);
@@ -105,17 +110,21 @@ public class ResourceSteps {
         assertNull(cell.getResource());
     }
 
-    @Then("{word} possede {int} ressource {word}")
+    @Then("{word} possede bien {int} ressource {word}")
     public void joueurPossedeRessourceSingulier(String playerName, int expectedCount, String resourceStr) {
+        assertPlayerResource(playerName, expectedCount, resourceStr);
+    }
+
+    @Then("{word} possede bien {int} ressources {word}")
+    public void joueurPossedeRessources(String playerName, int expectedCount, String resourceStr) {
+        assertPlayerResource(playerName, expectedCount, resourceStr);
+    }
+
+    private void assertPlayerResource(String playerName, int expectedCount, String resourceStr) {
         Resource resource = parseResource(resourceStr);
         Map<Resource, Integer> counts = world.playerResources.get(playerName);
         int actual = counts != null ? counts.getOrDefault(resource, 0) : 0;
         assertEquals(expectedCount, actual);
-    }
-
-    @Then("{word} possede {int} ressources {word}")
-    public void joueurPossedeRessourcesPluriel(String playerName, int expectedCount, String resourceStr) {
-        joueurPossedeRessourceSingulier(playerName, expectedCount, resourceStr);
     }
 
     private void collectResourcesFromTile(Tile tile) {
