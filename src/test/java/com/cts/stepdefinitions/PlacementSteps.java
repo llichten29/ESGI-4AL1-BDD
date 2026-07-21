@@ -1,12 +1,14 @@
 package com.cts.stepdefinitions;
 
 import com.cts.domain.exception.InvalidPlacementException;
+import com.cts.domain.model.FireToken;
 import com.cts.domain.model.Kingdom;
 import com.cts.domain.model.Position;
 import com.cts.domain.model.Terrain;
 import com.cts.domain.model.Tile;
 import com.cts.domain.model.TileCell;
 import com.cts.domain.service.PlacementService;
+import com.cts.domain.service.VolcanoService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -20,6 +22,7 @@ public class PlacementSteps {
     private boolean lastPlacementAccepted;
     private String lastError;
     private List<Position[]> validPositions;
+    private FireToken currentFireToken;
 
     @Given("un joueur {word} avec la tuile depart en position \\({int},{int}\\)")
     public void unJoueurAvecTuileDepart(String color, int x, int y) {
@@ -58,11 +61,34 @@ public class PlacementSteps {
         }
     }
 
+    @Given("un volcan en \\({int},{int}\\) avec feu {int}")
+    public void unVolcanEnAvecFeu(int x, int y, int fireCount) {
+        kingdom.placeCell(new Position(x, y), new TileCell(Terrain.VOLCAN, fireCount));
+    }
+
+    @Given("une case {word} en \\({int},{int}\\) avec icone feu {int}")
+    public void uneCaseEnAvecIconeFeu(String terrainStr, int x, int y, int fireCount) {
+        Terrain terrain = parseTerrain(terrainStr);
+        kingdom.placeCell(new Position(x, y), new TileCell(terrain, fireCount));
+    }
+
+    @Given("un jeton feu de valeur {int}")
+    public void unJetonFeuDeValeur(int value) {
+        currentFireToken = new FireToken(value);
+    }
+
+    @Given("un jeton feu de valeur {int} place en \\({int},{int}\\)")
+    public void unJetonFeuDeValeurPlaceEn(int value, int x, int y) {
+        kingdom.placeFireToken(new Position(x, y), new FireToken(value));
+    }
+
     @When("le joueur pose un domino {word}-{word} en \\({int},{int}\\) et \\({int},{int}\\)")
     public void leJoueurPoseUnDomino(String t1, String t2, int x1, int y1, int x2, int y2) {
         Terrain terrainA = parseTerrain(t1);
         Terrain terrainB = parseTerrain(t2);
-        currentTile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
+        int fireA = volcanoFireCount(terrainA, terrainB);
+        int fireB = volcanoFireCount(terrainB, terrainA);
+        currentTile = new Tile(0, new TileCell(terrainA, fireA), new TileCell(terrainB, fireB));
         Position posA = new Position(x1, y1);
         Position posB = new Position(x2, y2);
 
@@ -114,6 +140,36 @@ public class PlacementSteps {
         currentTile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
     }
 
+    @When("le joueur place un jeton feu de valeur {int} depuis le volcan en \\({int},{int}\\) sur la case \\({int},{int}\\)")
+    public void leJoueurPlaceUnJetonFeuDepuisLeVolcanSurLaCase(int value, int vx, int vy, int tx, int ty) {
+        try {
+            new VolcanoService().placeFireToken(kingdom, new Position(tx, ty), new Position(vx, vy), new FireToken(value));
+            lastPlacementAccepted = true;
+            lastError = null;
+        } catch (IllegalArgumentException e) {
+            lastPlacementAccepted = false;
+            lastError = e.getMessage();
+        }
+    }
+
+    @When("le joueur tente de placer un jeton feu de valeur {int} depuis le volcan en \\({int},{int}\\) sur la case \\({int},{int}\\)")
+    public void leJoueurTenteDePlacerUnJetonFeuDepuisLeVolcanSurLaCase(int value, int vx, int vy, int tx, int ty) {
+        leJoueurPlaceUnJetonFeuDepuisLeVolcanSurLaCase(value, vx, vy, tx, ty);
+    }
+
+    @When("le joueur tente de placer le jeton feu depuis le volcan en \\({int},{int}\\)")
+    public void leJoueurTenteDePlacerLeJetonFeuDepuisLeVolcanEn(int vx, int vy) {
+        Position volcanoPos = new Position(vx, vy);
+        List<Position> valid = new VolcanoService().findValidPlacements(kingdom, volcanoPos, currentFireToken);
+        if (valid.isEmpty()) {
+            lastPlacementAccepted = false;
+            lastError = "defausse";
+        } else {
+            lastPlacementAccepted = true;
+            lastError = null;
+        }
+    }
+
     @Then("le placement est accepte")
     public void lePlacementEstAccepte() {
         assertTrue(lastPlacementAccepted, "Placement refusé: " + (lastError != null ? lastError : ""));
@@ -158,6 +214,51 @@ public class PlacementSteps {
     public void lePlacementRefuseCar(String reason) {
         assertFalse(lastPlacementAccepted, "Le placement aurait du etre refuse");
         assertEquals(reason, lastError);
+    }
+
+    @Then("le joueur recoit un jeton feu de valeur {int}")
+    public void leJoueurRecoitUnJetonFeu(int expectedValue) {
+        assertNotNull(currentTile);
+        List<FireToken> tokens = new VolcanoService().collectFireTokens(currentTile);
+        assertEquals(1, tokens.size());
+        assertEquals(expectedValue, tokens.get(0).getCount());
+    }
+
+    @Then("le joueur ne recoit aucun jeton feu")
+    public void leJoueurNeRecoitAucunJetonFeu() {
+        assertNotNull(currentTile);
+        List<FireToken> tokens = new VolcanoService().collectFireTokens(currentTile);
+        assertTrue(tokens.isEmpty());
+    }
+
+    @Then("le jeton feu {int} a une portee de {int}")
+    public void leJetonFeuAUnePorteeDe(int value, int expectedRange) {
+        assertEquals(expectedRange, new FireToken(value).getRange());
+    }
+
+    @Then("le jeton feu est place en \\({int},{int}\\)")
+    public void leJetonFeuEstPlaceEn(int x, int y) {
+        assertTrue(kingdom.hasFireToken(new Position(x, y)));
+    }
+
+    @Then("le jeton feu ne peut pas etre place")
+    public void leJetonFeuNePeutPasEtrePlace() {
+        assertFalse(lastPlacementAccepted, "Le jeton feu aurait du etre refuse");
+    }
+
+    @Then("le jeton feu est defausse")
+    public void leJetonFeuEstDefausse() {
+        leJetonFeuNePeutPasEtrePlace();
+    }
+
+    private int volcanoFireCount(Terrain cell, Terrain other) {
+        if (cell != Terrain.VOLCAN) return 0;
+        return switch (other) {
+            case LAC -> 1;
+            case JUNGLE -> 2;
+            case DESERT -> 3;
+            default -> 0;
+        };
     }
 
     private Terrain parseTerrain(String s) {

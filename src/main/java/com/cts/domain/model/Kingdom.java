@@ -10,11 +10,13 @@ public class Kingdom {
     public static final Position STARTING_POSITION = new Position(2, 2);
 
     private final Map<Position, TileCell> grid;
+    private final Map<Position, FireToken> fireTokens;
     private int cellCount;
 
     public Kingdom() {
         grid = new HashMap<>();
         grid.put(STARTING_POSITION, new TileCell(Terrain.CHATEAU, 0));
+        fireTokens = new HashMap<>();
         cellCount = 1;
     }
 
@@ -38,5 +40,25 @@ public class Kingdom {
 
     public int getCellCount() {
         return cellCount;
+    }
+
+    public void placeFireToken(Position pos, FireToken token) {
+        fireTokens.put(pos, token);
+    }
+
+    public boolean hasFireToken(Position pos) {
+        return fireTokens.containsKey(pos);
+    }
+
+    public FireToken getFireToken(Position pos) {
+        return fireTokens.get(pos);
+    }
+
+    public void placeCell(Position pos, TileCell cell) {
+        boolean wasOccupied = grid.containsKey(pos);
+        grid.put(pos, cell);
+        if (!wasOccupied) {
+            cellCount++;
+        }
     }
 }

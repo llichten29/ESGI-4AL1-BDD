@@ -18,6 +18,7 @@ public class GameService {
     private Draft currentDraft;
     private final long seed;
     private int turnNumber;
+    private Tile lastDiscardedTile;
 
     public GameService(int playerCount, long seed) {
         this(playerCount, seed, new String[]{"Alice", "Bastien", "Camille", "David"});
@@ -44,13 +45,37 @@ public class GameService {
         prepareNextDraft();
     }
 
-    private void prepareNextDraft() {
+    public void prepareNextDraft() {
         int tilesToDraw = Math.min(4, drawPile.size());
         List<Tile> draftTiles = new ArrayList<>(drawPile.subList(0, tilesToDraw));
         drawPile.subList(0, tilesToDraw).clear();
         draftTiles.sort(Comparator.comparingInt(Tile::getNumber));
         currentDraft = new Draft(draftTiles);
         turnNumber++;
+    }
+
+    public void advanceRound() {
+        if (turnNumber >= 12) {
+            throw new IllegalStateException("la derniere ligne est deja formee");
+        }
+        List<Tile> unchosen = currentDraft.getUnchosenTiles();
+        lastDiscardedTile = unchosen.isEmpty() ? null : unchosen.get(0);
+        for (Player p : players) {
+            p.resetChoice();
+        }
+        prepareNextDraft();
+    }
+
+    public boolean canAdvance() {
+        return turnNumber < 12;
+    }
+
+    public boolean isGameOver() {
+        return turnNumber >= 12;
+    }
+
+    public Tile getLastDiscardedTile() {
+        return lastDiscardedTile;
     }
 
     public void selectTileByNumber(Player player, int tileNumber) {

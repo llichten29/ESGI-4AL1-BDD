@@ -11,29 +11,27 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TurnOrderSteps {
 
-    private GameService game;
+    private final WorldContext world;
+
+    public TurnOrderSteps(WorldContext world) {
+        this.world = world;
+    }
 
     @Given("une partie de {int} joueurs avec seed {long}")
     public void unePartieDeJoueurs(int playerCount, long seed) {
-        game = new GameService(playerCount, seed);
+        world.game = new GameService(playerCount, seed);
     }
 
     @When("le joueur {string} choisit le domino numero {int}")
     public void leJoueurChoisitLeDomino(String color, int tileNumber) {
-        Player player = null;
-        for (Player p : game.getPlayers()) {
-            if (p.getColor().equals(color)) {
-                player = p;
-                break;
-            }
-        }
+        Player player = world.game.findPlayerByColor(color);
         assertNotNull(player, "Joueur " + color + " introuvable");
-        game.selectTileByNumber(player, tileNumber);
+        world.game.selectTileByNumber(player, tileNumber);
     }
 
     @Then("l'ordre de jeu est {string}, {string}, {string}, {string}")
     public void lOrdreDeJeuEst(String first, String second, String third, String fourth) {
-        List<Player> order = game.getTurnOrder();
+        List<Player> order = world.game.getTurnOrder();
         assertEquals(4, order.size());
         assertEquals(first, order.get(0).getColor());
         assertEquals(second, order.get(1).getColor());
@@ -43,30 +41,24 @@ public class TurnOrderSteps {
 
     @Then("le premier joueur est {string}")
     public void lePremierJoueurEst(String color) {
-        List<Player> order = game.getTurnOrder();
+        List<Player> order = world.game.getTurnOrder();
         assertFalse(order.isEmpty());
         assertEquals(color, order.get(0).getColor());
     }
 
     @Then("{int} domino reste sans chef et sera defausse")
     public void dominoResteSansChef(int count) {
-        assertEquals(count, game.getCurrentDraft().getUnchosenCount(),
+        assertEquals(count, world.game.getCurrentDraft().getUnchosenCount(),
             "Nombre de dominos sans chef incorrect");
     }
 
     @Then("le joueur {string} ne peut pas choisir le domino numero {int}")
     public void leJoueurNePeutPasChoisir(String color, int tileNumber) {
-        Player player = null;
-        for (Player p : game.getPlayers()) {
-            if (p.getColor().equals(color)) {
-                player = p;
-                break;
-            }
-        }
+        Player player = world.game.findPlayerByColor(color);
         assertNotNull(player);
         Player finalPlayer = player;
         assertThrows(InvalidSelectionException.class, () -> {
-            game.selectTileByNumber(finalPlayer, tileNumber);
+            world.game.selectTileByNumber(finalPlayer, tileNumber);
         });
     }
 }
