@@ -59,7 +59,7 @@ public class DecouverteScoringService implements IScoringService {
         int fireCount = 0;
 
         while (!stack.isEmpty()) {
-            Position pos = stack.removeLast();
+            Position pos = stack.remove(stack.size() - 1);
             TileCell cell = kingdom.getCell(pos);
             cellCount++;
             fireCount += cell.getFireCount();

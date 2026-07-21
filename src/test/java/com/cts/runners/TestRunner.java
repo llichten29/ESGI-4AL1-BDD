@@ -13,5 +13,6 @@ import org.junit.platform.suite.api.Suite;
 @SelectClasspathResource("features")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.cts.stepdefinitions")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty, summary")
+@ConfigurationParameter(key = "cucumber.filter.tags", value = "not @ignore")
 public class TestRunner {
 }

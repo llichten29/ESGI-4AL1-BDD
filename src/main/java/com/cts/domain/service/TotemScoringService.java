@@ -11,8 +11,7 @@ public class TotemScoringService implements IScoringService {
 
     @Override
     public ScoreResult calculate(Kingdom kingdom) {
-        ScoreResult base = decouverte.calculate(kingdom);
-        return base;
+        return decouverte.calculate(kingdom);
     }
 
     @Override
