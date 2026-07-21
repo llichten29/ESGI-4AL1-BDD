@@ -18,4 +18,8 @@ public class WorldContext {
     public ScoreResult otherScore;
     public Tile currentTile;
     public Map<String, Map<Resource, Integer>> playerResources = new HashMap<>();
+    public Map<Resource, String> totemOwners = new HashMap<>();
+    public int totemTileScore;
+    public Map<String, Integer> resourceCounts = new HashMap<>();
+    public String winner;
 }
