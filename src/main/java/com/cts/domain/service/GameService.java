@@ -3,6 +3,7 @@ package com.cts.domain.service;
 import com.cts.domain.exception.InvalidPlayerCountException;
 import com.cts.domain.exception.InvalidSelectionException;
 import com.cts.domain.model.Draft;
+import com.cts.domain.model.GameMode;
 import com.cts.domain.model.Player;
 import com.cts.domain.model.Tile;
 import java.util.ArrayList;
@@ -17,20 +18,30 @@ public class GameService {
     private final List<Player> players;
     private Draft currentDraft;
     private final long seed;
+    private final GameMode gameMode;
     private int turnNumber;
     private Tile lastDiscardedTile;
 
     public GameService(int playerCount, long seed) {
-        this(playerCount, seed, new String[]{"Alice", "Bastien", "Camille", "David"});
+        this(playerCount, seed, GameMode.DECOUVERTE, new String[]{"Alice", "Bastien", "Camille", "David"});
     }
 
     public GameService(int playerCount, long seed, String[] playerNames) {
+        this(playerCount, seed, GameMode.DECOUVERTE, playerNames);
+    }
+
+    public GameService(int playerCount, long seed, GameMode gameMode) {
+        this(playerCount, seed, gameMode, new String[]{"Alice", "Bastien", "Camille", "David"});
+    }
+
+    public GameService(int playerCount, long seed, GameMode gameMode, String[] playerNames) {
         if (playerCount < 3 || playerCount > 4) {
             throw new InvalidPlayerCountException(
                 "une partie necessite 3 ou 4 joueurs"
             );
         }
         this.seed = seed;
+        this.gameMode = gameMode;
         this.turnNumber = 0;
 
         List<Tile> allTiles = TileFactory.createAllTiles();
@@ -76,6 +87,10 @@ public class GameService {
 
     public Tile getLastDiscardedTile() {
         return lastDiscardedTile;
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
     }
 
     public void selectTileByNumber(Player player, int tileNumber) {

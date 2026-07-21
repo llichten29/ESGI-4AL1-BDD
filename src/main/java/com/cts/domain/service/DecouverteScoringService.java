@@ -11,10 +11,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ScoringService {
+public class DecouverteScoringService implements IScoringService {
 
     private static final int[][] DIRS = {{-1,0}, {1,0}, {0,-1}, {0,1}};
 
+    @Override
     public ScoreResult calculate(Kingdom kingdom) {
         List<Region> regions = findRegions(kingdom);
         int totalScore = 0;
@@ -30,6 +31,7 @@ public class ScoringService {
         return new ScoreResult(totalScore, largestRegionSize, totalFireCount);
     }
 
+    @Override
     public List<Region> findRegions(Kingdom kingdom) {
         Set<Position> visited = new HashSet<>();
         List<Region> regions = new ArrayList<>();
@@ -79,6 +81,7 @@ public class ScoringService {
         return new Region(terrain, cellCount, fireCount);
     }
 
+    @Override
     public int compare(ScoreResult a, ScoreResult b) {
         if (a.totalScore() != b.totalScore()) {
             return Integer.compare(a.totalScore(), b.totalScore());
