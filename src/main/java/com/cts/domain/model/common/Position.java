@@ -1,4 +1,4 @@
-package com.cts.domain.model;
+package com.cts.domain.model.common;
 
 public record Position(int x, int y) {
     public boolean isAdjacent(Position other) {

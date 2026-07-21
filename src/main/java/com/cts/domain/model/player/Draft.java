@@ -1,5 +1,6 @@
-package com.cts.domain.model;
+package com.cts.domain.model.player;
 
+import com.cts.domain.model.tile.Tile;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

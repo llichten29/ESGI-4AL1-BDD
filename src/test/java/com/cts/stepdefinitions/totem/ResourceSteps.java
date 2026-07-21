@@ -1,15 +1,14 @@
 package com.cts.stepdefinitions.totem;
 
-import com.cts.domain.model.FireToken;
-import com.cts.domain.model.Kingdom;
-import com.cts.domain.model.Position;
-import com.cts.domain.model.Resource;
-import com.cts.domain.model.Terrain;
-import com.cts.domain.model.Tile;
-import com.cts.domain.model.TileCell;
-import com.cts.domain.service.PlacementService;
-import com.cts.domain.service.ResourcePlacementService;
-import com.cts.domain.service.VolcanoService;
+import com.cts.domain.model.board.Kingdom;
+import com.cts.domain.model.board.Kingdom.FireToken;
+import com.cts.domain.model.common.Position;
+import com.cts.domain.model.common.Resource;
+import com.cts.domain.model.tile.Terrain;
+import com.cts.domain.model.tile.Tile;
+import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.service.board.BoardService;
+import com.cts.domain.service.totem.TotemService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -19,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ResourceSteps {
     private final WorldContext world;
-    private final ResourcePlacementService resourceService = new ResourcePlacementService();
+    private final TotemService resourceService = new TotemService();
 
     public ResourceSteps(WorldContext world) {
         this.world = world;
@@ -74,7 +73,7 @@ public class ResourceSteps {
     public void leJoueurPoseLeDomino(int x1, int y1, int x2, int y2) {
         Tile tile = world.currentTile;
         assertNotNull(tile, "Aucun domino prepare");
-        new PlacementService().place(world.kingdom, tile, new Position(x1, y1), new Position(x2, y2));
+        new BoardService().place(world.kingdom, tile, new Position(x1, y1), new Position(x2, y2));
         collectResourcesFromTile(tile);
     }
 
@@ -84,7 +83,7 @@ public class ResourceSteps {
         Position volcanoPos = findVolcano();
         assertNotNull(volcanoPos, "Aucun volcan dans le royaume");
 
-        new VolcanoService().placeFireToken(world.kingdom, target, volcanoPos, new FireToken(value));
+        new BoardService().placeFireToken(world.kingdom, target, volcanoPos, new FireToken(value));
 
         Resource destroyed = resourceService.destroyResource(world.kingdom, target);
         if (destroyed != null) {

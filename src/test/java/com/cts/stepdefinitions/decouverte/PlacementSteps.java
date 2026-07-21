@@ -1,14 +1,13 @@
 package com.cts.stepdefinitions.decouverte;
 
 import com.cts.domain.exception.InvalidPlacementException;
-import com.cts.domain.model.FireToken;
-import com.cts.domain.model.Kingdom;
-import com.cts.domain.model.Position;
-import com.cts.domain.model.Terrain;
-import com.cts.domain.model.Tile;
-import com.cts.domain.model.TileCell;
-import com.cts.domain.service.PlacementService;
-import com.cts.domain.service.VolcanoService;
+import com.cts.domain.model.board.Kingdom;
+import com.cts.domain.model.board.Kingdom.FireToken;
+import com.cts.domain.model.common.Position;
+import com.cts.domain.model.tile.Terrain;
+import com.cts.domain.model.tile.Tile;
+import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.service.board.BoardService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -40,7 +39,7 @@ public class PlacementSteps {
         Terrain terrainA = parseTerrain(t1);
         Terrain terrainB = parseTerrain(t2);
         Tile tile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
-        new PlacementService().place(world.kingdom, tile, new Position(x1, y1), new Position(x2, y2));
+        new BoardService().place(world.kingdom, tile, new Position(x1, y1), new Position(x2, y2));
     }
 
     @Given("le joueur a deja pose une {word} en \\({int},{int}\\)")
@@ -56,7 +55,7 @@ public class PlacementSteps {
                 if (other != null) {
                     Tile tile = new Tile(0, new TileCell(terrain, 0), new TileCell(terrain, 0));
                     if (target.isAdjacent(other)) {
-                        new PlacementService().place(world.kingdom, tile, target, other);
+                        new BoardService().place(world.kingdom, tile, target, other);
                         return;
                     }
                 }
@@ -70,7 +69,7 @@ public class PlacementSteps {
             if (cellAtTarget.getTerrain() != terrain) {
                 tile = new Tile(0, new TileCell(Terrain.DESERT, 0), new TileCell(terrain, 0));
             }
-            new PlacementService().place(world.kingdom, tile, adj, target);
+            new BoardService().place(world.kingdom, tile, adj, target);
         }
     }
 
@@ -106,7 +105,7 @@ public class PlacementSteps {
         Position posB = new Position(x2, y2);
 
         try {
-            new PlacementService().place(world.kingdom, currentTile, posA, posB);
+            new BoardService().place(world.kingdom, currentTile, posA, posB);
             lastPlacementAccepted = true;
             lastError = null;
         } catch (InvalidPlacementException e) {
@@ -124,7 +123,7 @@ public class PlacementSteps {
         Position posB = new Position(x2, y2);
 
         try {
-            new PlacementService().place(world.kingdom, currentTile, posA, posB);
+            new BoardService().place(world.kingdom, currentTile, posA, posB);
             lastPlacementAccepted = true;
             lastError = null;
         } catch (InvalidPlacementException e) {
@@ -143,7 +142,7 @@ public class PlacementSteps {
         Terrain terrainA = parseTerrain(t1);
         Terrain terrainB = parseTerrain(t2);
         currentTile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
-        validPositions = new PlacementService().findValidPlacements(world.kingdom, currentTile);
+        validPositions = new BoardService().findValidPlacements(world.kingdom, currentTile);
     }
 
     @When("le joueur recoit un domino {word}-{word}")
@@ -156,7 +155,7 @@ public class PlacementSteps {
     @When("le joueur place un jeton feu de valeur {int} depuis le volcan en \\({int},{int}\\) sur la case \\({int},{int}\\)")
     public void leJoueurPlaceUnJetonFeuDepuisLeVolcanSurLaCase(int value, int vx, int vy, int tx, int ty) {
         try {
-            new VolcanoService().placeFireToken(world.kingdom, new Position(tx, ty), new Position(vx, vy), new FireToken(value));
+            new BoardService().placeFireToken(world.kingdom, new Position(tx, ty), new Position(vx, vy), new FireToken(value));
             lastPlacementAccepted = true;
             lastError = null;
         } catch (IllegalArgumentException e) {
@@ -173,7 +172,7 @@ public class PlacementSteps {
     @When("le joueur tente de placer le jeton feu depuis le volcan en \\({int},{int}\\)")
     public void leJoueurTenteDePlacerLeJetonFeuDepuisLeVolcanEn(int vx, int vy) {
         Position volcanoPos = new Position(vx, vy);
-        List<Position> valid = new VolcanoService().findValidPlacements(world.kingdom, volcanoPos, currentFireToken);
+        List<Position> valid = new BoardService().findValidFireTokenPlacements(world.kingdom, volcanoPos, currentFireToken);
         if (valid.isEmpty()) {
             lastPlacementAccepted = false;
             lastError = "defausse";
@@ -202,7 +201,7 @@ public class PlacementSteps {
     @Then("le domino ne peut pas etre place")
     public void leDominoNePeutPasEtrePlace() {
         assertNotNull(currentTile);
-        boolean hasAny = new PlacementService().hasAnyPlacement(world.kingdom, currentTile);
+        boolean hasAny = new BoardService().hasAnyPlacement(world.kingdom, currentTile);
         assertFalse(hasAny, "Le domino peut etre place alors qu il devrait etre impossible");
     }
 
@@ -214,12 +213,12 @@ public class PlacementSteps {
     @Then("le joueur est oblige de le poser sur une position valide")
     public void leJoueurObligeDePoser() {
         assertNotNull(currentTile);
-        boolean hasAny = new PlacementService().hasAnyPlacement(world.kingdom, currentTile);
+        boolean hasAny = new BoardService().hasAnyPlacement(world.kingdom, currentTile);
         assertTrue(hasAny, "Le domino n a aucune position valide, mais devrait en avoir au moins une");
         assertDoesNotThrow(() -> {
-            List<Position[]> positions = new PlacementService().findValidPlacements(world.kingdom, currentTile);
+            List<Position[]> positions = new BoardService().findValidPlacements(world.kingdom, currentTile);
             assertFalse(positions.isEmpty());
-            new PlacementService().place(world.kingdom, currentTile, positions.get(0)[0], positions.get(0)[1]);
+            new BoardService().place(world.kingdom, currentTile, positions.get(0)[0], positions.get(0)[1]);
         });
     }
 
@@ -232,7 +231,7 @@ public class PlacementSteps {
     @Then("le joueur recoit un jeton feu de valeur {int}")
     public void leJoueurRecoitUnJetonFeu(int expectedValue) {
         assertNotNull(currentTile);
-        List<FireToken> tokens = new VolcanoService().collectFireTokens(currentTile);
+        List<FireToken> tokens = new BoardService().collectFireTokens(currentTile);
         assertEquals(1, tokens.size());
         assertEquals(expectedValue, tokens.get(0).getCount());
     }
@@ -240,7 +239,7 @@ public class PlacementSteps {
     @Then("le joueur ne recoit aucun jeton feu")
     public void leJoueurNeRecoitAucunJetonFeu() {
         assertNotNull(currentTile);
-        List<FireToken> tokens = new VolcanoService().collectFireTokens(currentTile);
+        List<FireToken> tokens = new BoardService().collectFireTokens(currentTile);
         assertTrue(tokens.isEmpty());
     }
 
