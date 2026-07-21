@@ -1,16 +1,14 @@
 package com.cts.stepdefinitions.decouverte;
 
-import com.cts.domain.model.Kingdom;
-import com.cts.domain.model.Position;
-import com.cts.domain.model.ScoreResult;
-import com.cts.domain.model.Terrain;
-import com.cts.domain.model.TileCell;
-import com.cts.domain.service.BonusService;
+import com.cts.domain.model.board.Kingdom;
+import com.cts.domain.model.common.Position;
+import com.cts.domain.model.scoring.ScoreResult;
+import com.cts.domain.model.tile.Terrain;
+import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.service.scoring.BonusService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BonusSteps {
 

@@ -1,11 +1,11 @@
 package com.cts.stepdefinitions.common;
 
 import com.cts.domain.exception.InvalidPlayerCountException;
-import com.cts.domain.model.Draft;
-import com.cts.domain.model.GameMode;
-import com.cts.domain.model.Player;
-import com.cts.domain.model.Tile;
-import com.cts.domain.service.GameService;
+import com.cts.domain.model.player.Draft;
+import com.cts.domain.model.common.GameMode;
+import com.cts.domain.model.player.Player;
+import com.cts.domain.model.tile.Tile;
+import com.cts.domain.service.game.GameService;
 import com.cts.framework.Utils;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;

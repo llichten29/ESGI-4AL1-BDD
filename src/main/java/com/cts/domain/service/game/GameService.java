@@ -1,11 +1,13 @@
-package com.cts.domain.service;
+package com.cts.domain.service.game;
 
 import com.cts.domain.exception.InvalidPlayerCountException;
 import com.cts.domain.exception.InvalidSelectionException;
-import com.cts.domain.model.Draft;
-import com.cts.domain.model.GameMode;
-import com.cts.domain.model.Player;
-import com.cts.domain.model.Tile;
+import com.cts.domain.model.common.GameMode;
+import com.cts.domain.model.player.Draft;
+import com.cts.domain.model.player.Player;
+import com.cts.domain.model.tile.Terrain;
+import com.cts.domain.model.tile.Tile;
+import com.cts.domain.model.tile.Tile.TileCell;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,7 +46,7 @@ public class GameService {
         this.gameMode = gameMode;
         this.turnNumber = 0;
 
-        List<Tile> allTiles = TileFactory.createAllTiles();
+        List<Tile> allTiles = createAllTiles();
         Collections.shuffle(allTiles, new Random(seed));
         this.drawPile = new ArrayList<>(allTiles);
 
@@ -166,5 +168,49 @@ public class GameService {
 
     public int getTurnNumber() {
         return turnNumber;
+    }
+
+    private static List<Tile> createAllTiles() {
+        List<Tile> tiles = new ArrayList<>();
+        int number = 1;
+
+        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.STEPPE, 0, 0, 3);
+        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.LAC, 0, 1, 2);
+        number = addTiles(tiles, number, Terrain.LAC, Terrain.LAC, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.JUNGLE, Terrain.JUNGLE, 1, 0, 3);
+        number = addTiles(tiles, number, Terrain.JUNGLE, Terrain.CARRIERE, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.CARRIERE, Terrain.CARRIERE, 1, 0, 2);
+        number = addTiles(tiles, number, Terrain.DESERT, Terrain.DESERT, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.JUNGLE, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.CARRIERE, 1, 0, 2);
+        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.DESERT, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.LAC, Terrain.JUNGLE, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.LAC, Terrain.CARRIERE, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.LAC, Terrain.DESERT, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.JUNGLE, Terrain.DESERT, 1, 0, 2);
+        number = addTiles(tiles, number, Terrain.CARRIERE, Terrain.DESERT, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.VOLCAN, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.LAC, Terrain.VOLCAN, 0, 1, 2);
+        number = addTiles(tiles, number, Terrain.JUNGLE, Terrain.VOLCAN, 0, 2, 2);
+        number = addTiles(tiles, number, Terrain.CARRIERE, Terrain.VOLCAN, 0, 0, 2);
+        number = addTiles(tiles, number, Terrain.DESERT, Terrain.VOLCAN, 0, 3, 2);
+        number = addTiles(tiles, number, Terrain.VOLCAN, Terrain.VOLCAN, 1, 1, 2);
+        number = addTiles(tiles, number, Terrain.VOLCAN, Terrain.VOLCAN, 2, 0, 2);
+        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.STEPPE, 1, 0, 1);
+        addTiles(tiles, number, Terrain.LAC, Terrain.LAC, 1, 0, 1);
+
+        return tiles;
+    }
+
+    private static int addTiles(List<Tile> tiles, int startNumber,
+                                  Terrain t1, Terrain t2,
+                                  int fire1, int fire2,
+                                  int count) {
+        int n = startNumber;
+        for (int i = 0; i < count; i++) {
+            tiles.add(new Tile(n, new TileCell(t1, fire1), new TileCell(t2, fire2)));
+            n++;
+        }
+        return n;
     }
 }

@@ -1,21 +1,20 @@
-package com.cts.domain.service;
+package com.cts.domain.service.scoring;
 
-import com.cts.domain.model.Kingdom;
-import com.cts.domain.model.Position;
-import com.cts.domain.model.Region;
-import com.cts.domain.model.ScoreResult;
-import com.cts.domain.model.Terrain;
-import com.cts.domain.model.TileCell;
+import com.cts.domain.model.board.Kingdom;
+import com.cts.domain.model.board.Region;
+import com.cts.domain.model.common.Position;
+import com.cts.domain.model.scoring.ScoreResult;
+import com.cts.domain.model.tile.Terrain;
+import com.cts.domain.model.tile.Tile.TileCell;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class DecouverteScoringService implements IScoringService {
+public class DecouverteScoringService {
 
     private static final int[][] DIRS = {{-1,0}, {1,0}, {0,-1}, {0,1}};
 
-    @Override
     public ScoreResult calculate(Kingdom kingdom) {
         List<Region> regions = findRegions(kingdom);
         int totalScore = 0;
@@ -31,7 +30,6 @@ public class DecouverteScoringService implements IScoringService {
         return new ScoreResult(totalScore, largestRegionSize, totalFireCount);
     }
 
-    @Override
     public List<Region> findRegions(Kingdom kingdom) {
         Set<Position> visited = new HashSet<>();
         List<Region> regions = new ArrayList<>();
@@ -81,7 +79,6 @@ public class DecouverteScoringService implements IScoringService {
         return new Region(terrain, cellCount, fireCount);
     }
 
-    @Override
     public int compare(ScoreResult a, ScoreResult b) {
         if (a.totalScore() != b.totalScore()) {
             return Integer.compare(a.totalScore(), b.totalScore());

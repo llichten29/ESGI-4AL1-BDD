@@ -1,5 +1,9 @@
-package com.cts.domain.model;
+package com.cts.domain.model.board;
 
+import com.cts.domain.model.common.Position;
+import com.cts.domain.model.tile.Terrain;
+import com.cts.domain.model.tile.Tile;
+import com.cts.domain.model.tile.Tile.TileCell;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +63,22 @@ public class Kingdom {
         grid.put(pos, cell);
         if (!wasOccupied) {
             cellCount++;
+        }
+    }
+
+    public static class FireToken {
+        private final int count;
+
+        public FireToken(int count) {
+            this.count = count;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public int getRange() {
+            return 4 - count;
         }
     }
 }

@@ -1,7 +1,7 @@
-package com.cts.domain.service;
+package com.cts.domain.service.scoring;
 
-import com.cts.domain.model.Kingdom;
-import com.cts.domain.model.Position;
+import com.cts.domain.model.board.Kingdom;
+import com.cts.domain.model.common.Position;
 
 public class BonusService {
 

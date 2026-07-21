@@ -1,7 +1,7 @@
 package com.cts.stepdefinitions.common;
 
-import com.cts.domain.model.Player;
-import com.cts.domain.model.Tile;
+import com.cts.domain.model.player.Player;
+import com.cts.domain.model.tile.Tile;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

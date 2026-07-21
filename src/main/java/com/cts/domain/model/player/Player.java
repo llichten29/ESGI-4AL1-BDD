@@ -1,4 +1,6 @@
-package com.cts.domain.model;
+package com.cts.domain.model.player;
+
+import com.cts.domain.model.tile.Tile;
 
 public class Player {
     private final String color;

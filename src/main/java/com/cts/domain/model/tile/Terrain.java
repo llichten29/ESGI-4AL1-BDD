@@ -1,4 +1,4 @@
-package com.cts.domain.model;
+package com.cts.domain.model.tile;
 
 public enum Terrain {
     VOLCAN,

@@ -1,6 +1,6 @@
 package com.cts.framework;
 
-import com.cts.domain.model.Tile;
+import com.cts.domain.model.tile.Tile;
 import java.util.List;
 
 public class Utils {

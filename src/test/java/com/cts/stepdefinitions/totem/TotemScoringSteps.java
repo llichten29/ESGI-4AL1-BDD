@@ -1,13 +1,11 @@
 package com.cts.stepdefinitions.totem;
 
-import com.cts.domain.model.Kingdom;
-import com.cts.domain.model.Position;
-import com.cts.domain.model.Region;
-import com.cts.domain.model.Resource;
-import com.cts.domain.model.ScoreResult;
-import com.cts.domain.model.TileCell;
-import com.cts.domain.service.DecouverteScoringService;
-import com.cts.domain.service.TotemService;
+import com.cts.domain.model.common.Position;
+import com.cts.domain.model.common.Resource;
+import com.cts.domain.model.scoring.ScoreResult;
+import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.service.scoring.DecouverteScoringService;
+import com.cts.domain.service.totem.TotemService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

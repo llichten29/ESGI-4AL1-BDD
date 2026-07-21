@@ -1,12 +1,12 @@
 package com.cts.stepdefinitions.totem;
 
-import com.cts.domain.model.Resource;
-import com.cts.domain.service.TotemService;
+import com.cts.domain.model.common.Resource;
+import com.cts.domain.service.totem.TotemService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,7 +30,7 @@ public class TotemSteps {
 
     private void setPlayerResource(String player, int count, String resourceStr) {
         Resource resource = parseResource(resourceStr);
-        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(player, k -> new HashMap<>());
+        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(player, k -> new EnumMap<>(Resource.class));
         counts.put(resource, count);
     }
 
@@ -54,7 +54,7 @@ public class TotemSteps {
 
     @When("les totems sont reevalues")
     public void lesTotemsSontReevalues() {
-        Map<Resource, String> currentOwners = new HashMap<>(world.totemOwners);
+        Map<Resource, String> currentOwners = new EnumMap<>(world.totemOwners);
         world.totemOwners = totemService.allocateTotems(world.playerResources, currentOwners);
     }
 

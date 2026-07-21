@@ -1,8 +1,8 @@
 package com.cts.stepdefinitions.decouverte;
 
-import com.cts.domain.model.Region;
-import com.cts.domain.model.ScoreResult;
-import com.cts.domain.service.DecouverteScoringService;
+import com.cts.domain.model.board.Region;
+import com.cts.domain.model.scoring.ScoreResult;
+import com.cts.domain.service.scoring.DecouverteScoringService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
