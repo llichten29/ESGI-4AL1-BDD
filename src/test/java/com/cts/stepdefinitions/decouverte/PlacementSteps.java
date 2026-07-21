@@ -1,4 +1,4 @@
-package com.cts.stepdefinitions;
+package com.cts.stepdefinitions.decouverte;
 
 import com.cts.domain.exception.InvalidPlacementException;
 import com.cts.domain.model.FireToken;
@@ -9,6 +9,7 @@ import com.cts.domain.model.Tile;
 import com.cts.domain.model.TileCell;
 import com.cts.domain.service.PlacementService;
 import com.cts.domain.service.VolcanoService;
+import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

@@ -1,8 +1,9 @@
-package com.cts.stepdefinitions;
+package com.cts.stepdefinitions.decouverte;
 
 import com.cts.domain.model.Region;
 import com.cts.domain.model.ScoreResult;
-import com.cts.domain.service.ScoringService;
+import com.cts.domain.service.DecouverteScoringService;
+import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
@@ -21,7 +22,7 @@ public class ScoringSteps {
 
     @When("le joueur calcule son score")
     public void leJoueurCalculeSonScore() {
-        ScoringService service = new ScoringService();
+        DecouverteScoringService service = new DecouverteScoringService();
         world.lastScore = service.calculate(world.kingdom);
         lastRegions = service.findRegions(world.kingdom);
     }
@@ -88,13 +89,13 @@ public class ScoringSteps {
 
     @Then("le joueur avec la plus grande region gagne")
     public void leJoueurAvecLaPlusGrandeRegionGagne() {
-        int result = new ScoringService().compare(aliceScore, bobScore);
+        int result = new DecouverteScoringService().compare(aliceScore, bobScore);
         assertTrue(result > 0, "Alice (plus grande region) devrait gagner");
     }
 
     @Then("le joueur avec le plus de feux gagne")
     public void leJoueurAvecLePlusDeFeuxGagne() {
-        int result = new ScoringService().compare(aliceScore, bobScore);
+        int result = new DecouverteScoringService().compare(aliceScore, bobScore);
         assertTrue(result > 0, "Alice (plus de feux) devrait gagner");
     }
 
@@ -102,7 +103,7 @@ public class ScoringSteps {
     public void lesJoueursSontExAequo() {
         aliceScore = new ScoreResult(10, 5, 3);
         bobScore = new ScoreResult(10, 5, 3);
-        int result = new ScoringService().compare(aliceScore, bobScore);
+        int result = new DecouverteScoringService().compare(aliceScore, bobScore);
         assertEquals(0, result);
     }
 }
