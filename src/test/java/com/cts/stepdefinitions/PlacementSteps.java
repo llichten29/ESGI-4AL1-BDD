@@ -17,17 +17,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PlacementSteps {
 
-    private Kingdom kingdom;
+    private final WorldContext world;
     private Tile currentTile;
     private boolean lastPlacementAccepted;
     private String lastError;
     private List<Position[]> validPositions;
     private FireToken currentFireToken;
 
+    public PlacementSteps(WorldContext world) {
+        this.world = world;
+    }
+
     @Given("un joueur {word} avec la tuile depart en position \\({int},{int}\\)")
     public void unJoueurAvecTuileDepart(String color, int x, int y) {
-        kingdom = new Kingdom();
-        assertEquals(Terrain.CHATEAU, kingdom.getCell(new Position(x, y)).getTerrain());
+        world.kingdom = new Kingdom();
+        assertEquals(Terrain.CHATEAU, world.kingdom.getCell(new Position(x, y)).getTerrain());
     }
 
     @Given("le joueur a deja pose une {word} en \\({int},{int}\\)")
@@ -35,15 +39,15 @@ public class PlacementSteps {
         Terrain terrain = parseTerrain(terrainStr);
         Position target = new Position(x, y);
 
-        if (kingdom.isOccupied(target)) return;
+        if (world.kingdom.isOccupied(target)) return;
 
-        for (Position occupied : kingdom.getOccupiedPositions()) {
+        for (Position occupied : world.kingdom.getOccupiedPositions()) {
             if (target.isAdjacent(occupied)) {
                 Position other = findAdjacentFreePosition(target);
                 if (other != null) {
                     Tile tile = new Tile(0, new TileCell(terrain, 0), new TileCell(terrain, 0));
                     if (target.isAdjacent(other)) {
-                        new PlacementService().place(kingdom, tile, target, other);
+                        new PlacementService().place(world.kingdom, tile, target, other);
                         return;
                     }
                 }
@@ -57,19 +61,19 @@ public class PlacementSteps {
             if (cellAtTarget.getTerrain() != terrain) {
                 tile = new Tile(0, new TileCell(Terrain.DESERT, 0), new TileCell(terrain, 0));
             }
-            new PlacementService().place(kingdom, tile, adj, target);
+            new PlacementService().place(world.kingdom, tile, adj, target);
         }
     }
 
     @Given("un volcan en \\({int},{int}\\) avec feu {int}")
     public void unVolcanEnAvecFeu(int x, int y, int fireCount) {
-        kingdom.placeCell(new Position(x, y), new TileCell(Terrain.VOLCAN, fireCount));
+        world.kingdom.placeCell(new Position(x, y), new TileCell(Terrain.VOLCAN, fireCount));
     }
 
     @Given("une case {word} en \\({int},{int}\\) avec icone feu {int}")
     public void uneCaseEnAvecIconeFeu(String terrainStr, int x, int y, int fireCount) {
         Terrain terrain = parseTerrain(terrainStr);
-        kingdom.placeCell(new Position(x, y), new TileCell(terrain, fireCount));
+        world.kingdom.placeCell(new Position(x, y), new TileCell(terrain, fireCount));
     }
 
     @Given("un jeton feu de valeur {int}")
@@ -79,7 +83,7 @@ public class PlacementSteps {
 
     @Given("un jeton feu de valeur {int} place en \\({int},{int}\\)")
     public void unJetonFeuDeValeurPlaceEn(int value, int x, int y) {
-        kingdom.placeFireToken(new Position(x, y), new FireToken(value));
+        world.kingdom.placeFireToken(new Position(x, y), new FireToken(value));
     }
 
     @When("le joueur pose un domino {word}-{word} en \\({int},{int}\\) et \\({int},{int}\\)")
@@ -93,7 +97,7 @@ public class PlacementSteps {
         Position posB = new Position(x2, y2);
 
         try {
-            new PlacementService().place(kingdom, currentTile, posA, posB);
+            new PlacementService().place(world.kingdom, currentTile, posA, posB);
             lastPlacementAccepted = true;
             lastError = null;
         } catch (InvalidPlacementException e) {
@@ -111,7 +115,7 @@ public class PlacementSteps {
         Position posB = new Position(x2, y2);
 
         try {
-            new PlacementService().place(kingdom, currentTile, posA, posB);
+            new PlacementService().place(world.kingdom, currentTile, posA, posB);
             lastPlacementAccepted = true;
             lastError = null;
         } catch (InvalidPlacementException e) {
@@ -130,7 +134,7 @@ public class PlacementSteps {
         Terrain terrainA = parseTerrain(t1);
         Terrain terrainB = parseTerrain(t2);
         currentTile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
-        validPositions = new PlacementService().findValidPlacements(kingdom, currentTile);
+        validPositions = new PlacementService().findValidPlacements(world.kingdom, currentTile);
     }
 
     @When("le joueur recoit un domino {word}-{word}")
@@ -143,7 +147,7 @@ public class PlacementSteps {
     @When("le joueur place un jeton feu de valeur {int} depuis le volcan en \\({int},{int}\\) sur la case \\({int},{int}\\)")
     public void leJoueurPlaceUnJetonFeuDepuisLeVolcanSurLaCase(int value, int vx, int vy, int tx, int ty) {
         try {
-            new VolcanoService().placeFireToken(kingdom, new Position(tx, ty), new Position(vx, vy), new FireToken(value));
+            new VolcanoService().placeFireToken(world.kingdom, new Position(tx, ty), new Position(vx, vy), new FireToken(value));
             lastPlacementAccepted = true;
             lastError = null;
         } catch (IllegalArgumentException e) {
@@ -160,7 +164,7 @@ public class PlacementSteps {
     @When("le joueur tente de placer le jeton feu depuis le volcan en \\({int},{int}\\)")
     public void leJoueurTenteDePlacerLeJetonFeuDepuisLeVolcanEn(int vx, int vy) {
         Position volcanoPos = new Position(vx, vy);
-        List<Position> valid = new VolcanoService().findValidPlacements(kingdom, volcanoPos, currentFireToken);
+        List<Position> valid = new VolcanoService().findValidPlacements(world.kingdom, volcanoPos, currentFireToken);
         if (valid.isEmpty()) {
             lastPlacementAccepted = false;
             lastError = "defausse";
@@ -177,7 +181,7 @@ public class PlacementSteps {
 
     @Then("le territoire contient {int} cases")
     public void leTerritoireContientCases(int count) {
-        assertEquals(count, kingdom.getCellCount());
+        assertEquals(count, world.kingdom.getCellCount());
     }
 
     @Then("plusieurs positions sont proposees")
@@ -189,7 +193,7 @@ public class PlacementSteps {
     @Then("le domino ne peut pas etre place")
     public void leDominoNePeutPasEtrePlace() {
         assertNotNull(currentTile);
-        boolean hasAny = new PlacementService().hasAnyPlacement(kingdom, currentTile);
+        boolean hasAny = new PlacementService().hasAnyPlacement(world.kingdom, currentTile);
         assertFalse(hasAny, "Le domino peut etre place alors qu il devrait etre impossible");
     }
 
@@ -201,12 +205,12 @@ public class PlacementSteps {
     @Then("le joueur est oblige de le poser sur une position valide")
     public void leJoueurObligeDePoser() {
         assertNotNull(currentTile);
-        boolean hasAny = new PlacementService().hasAnyPlacement(kingdom, currentTile);
+        boolean hasAny = new PlacementService().hasAnyPlacement(world.kingdom, currentTile);
         assertTrue(hasAny, "Le domino n a aucune position valide, mais devrait en avoir au moins une");
         assertDoesNotThrow(() -> {
-            List<Position[]> positions = new PlacementService().findValidPlacements(kingdom, currentTile);
+            List<Position[]> positions = new PlacementService().findValidPlacements(world.kingdom, currentTile);
             assertFalse(positions.isEmpty());
-            new PlacementService().place(kingdom, currentTile, positions.get(0)[0], positions.get(0)[1]);
+            new PlacementService().place(world.kingdom, currentTile, positions.get(0)[0], positions.get(0)[1]);
         });
     }
 
@@ -238,7 +242,7 @@ public class PlacementSteps {
 
     @Then("le jeton feu est place en \\({int},{int}\\)")
     public void leJetonFeuEstPlaceEn(int x, int y) {
-        assertTrue(kingdom.hasFireToken(new Position(x, y)));
+        assertTrue(world.kingdom.hasFireToken(new Position(x, y)));
     }
 
     @Then("le jeton feu ne peut pas etre place")
@@ -279,7 +283,7 @@ public class PlacementSteps {
         for (int[] d : dirs) {
             Position p = new Position(target.x() + d[0], target.y() + d[1]);
             if (p.x() >= 0 && p.x() < Kingdom.SIZE && p.y() >= 0 && p.y() < Kingdom.SIZE
-                && !kingdom.isOccupied(p)) {
+                && !world.kingdom.isOccupied(p)) {
                 return p;
             }
         }
@@ -291,7 +295,7 @@ public class PlacementSteps {
         for (int[] d : dirs) {
             Position p = new Position(target.x() + d[0], target.y() + d[1]);
             if (p.x() >= 0 && p.x() < Kingdom.SIZE && p.y() >= 0 && p.y() < Kingdom.SIZE
-                && kingdom.isOccupied(p)) {
+                && world.kingdom.isOccupied(p)) {
                 return p;
             }
         }
