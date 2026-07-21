@@ -35,15 +35,14 @@ public class ScoringService {
         List<Region> regions = new ArrayList<>();
 
         for (Position pos : kingdom.getOccupiedPositions()) {
-            if (visited.contains(pos)) continue;
-            TileCell cell = kingdom.getCell(pos);
-            if (cell.getTerrain() == Terrain.VOLCAN || cell.getTerrain() == Terrain.CHATEAU) {
-                visited.add(pos);
-                continue;
-            }
-            Region region = flood(kingdom, pos, cell.getTerrain(), visited);
-            if (region != null) {
-                regions.add(region);
+            if (!visited.contains(pos)) {
+                TileCell cell = kingdom.getCell(pos);
+                if (cell.getTerrain() != Terrain.VOLCAN && cell.getTerrain() != Terrain.CHATEAU) {
+                    Region region = flood(kingdom, pos, cell.getTerrain(), visited);
+                    regions.add(region);
+                } else {
+                    visited.add(pos);
+                }
             }
         }
         return regions;

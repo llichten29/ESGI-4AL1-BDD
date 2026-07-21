@@ -59,8 +59,7 @@ public class ScoringSteps {
 
     @Then("le joueur a un score de {int}")
     public void leJoueurAUnScoreDe(int expected) {
-        assertNotNull(world.lastScore);
-        assertEquals(expected, world.lastScore.totalScore());
+        leScoreTotalEstDe(expected);
     }
 
     @Then("la plus grande region fait {int} cases")
