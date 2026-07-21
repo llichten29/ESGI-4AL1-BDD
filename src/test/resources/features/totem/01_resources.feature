@@ -1,4 +1,3 @@
-@ignore
 Feature: Ressources en Mode Totem
     En tant que joueur
     Je veux collecter des ressources sur mes dominos
@@ -47,15 +46,15 @@ Feature: Ressources en Mode Totem
     # --- Collecte des ressources par le joueur ---
 
     Scenario: Joueur collecte une ressource en posant un domino
-        Given le joueur a deja pose une steppe en (2,1)
+        Given le joueur a deja pose une steppe en (1,2)
         And le joueur recoit un domino steppe-lac avec une ressource Mammouth
-        When le joueur pose le domino en (2,0) et (2,1)
+        When le joueur pose le domino en (2,1) et (2,0)
         Then Alice possede 1 ressource Mammouth
 
     Scenario: Joueur collecte deux ressources sur un meme domino
-        Given le joueur a deja pose une steppe en (2,1)
+        Given le joueur a deja pose une steppe en (1,2)
         And le joueur recoit un domino steppe-steppe avec 2 ressources Mammouth
-        When le joueur pose le domino en (2,0) et (1,0)
+        When le joueur pose le domino en (3,2) et (3,1)
         Then Alice possede 2 ressources Mammouth
 
     # --- Destruction par le feu ---
