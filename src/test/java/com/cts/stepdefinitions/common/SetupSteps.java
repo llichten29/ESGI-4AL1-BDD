@@ -1,4 +1,4 @@
-package com.cts.stepdefinitions;
+package com.cts.stepdefinitions.common;
 
 import com.cts.domain.exception.InvalidPlayerCountException;
 import com.cts.domain.model.Draft;
@@ -6,6 +6,7 @@ import com.cts.domain.model.Player;
 import com.cts.domain.model.Tile;
 import com.cts.domain.service.GameService;
 import com.cts.framework.Utils;
+import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.List;
