@@ -1,8 +1,9 @@
-package com.cts.stepdefinitions;
+package com.cts.stepdefinitions.common;
 
 import com.cts.domain.exception.InvalidSelectionException;
 import com.cts.domain.model.Player;
 import com.cts.domain.service.GameService;
+import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

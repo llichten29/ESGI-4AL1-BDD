@@ -1,11 +1,13 @@
-package com.cts.stepdefinitions;
+package com.cts.stepdefinitions.common;
 
 import com.cts.domain.exception.InvalidPlayerCountException;
 import com.cts.domain.model.Draft;
+import com.cts.domain.model.GameMode;
 import com.cts.domain.model.Player;
 import com.cts.domain.model.Tile;
 import com.cts.domain.service.GameService;
 import com.cts.framework.Utils;
+import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.List;
@@ -32,6 +34,16 @@ public class SetupSteps {
             } else {
                 world.game = new GameService(playerCount, seed);
             }
+            world.errorMessage = null;
+        } catch (InvalidPlayerCountException e) {
+            world.errorMessage = e.getMessage();
+        }
+    }
+
+    @Given("^une partie en mode Totem avec (\\d+) joueurs? et seed (\\d+)$")
+    public void unePartieEnModeTotem(int playerCount, long seed) {
+        try {
+            world.game = new GameService(playerCount, seed, GameMode.TOTEM);
             world.errorMessage = null;
         } catch (InvalidPlayerCountException e) {
             world.errorMessage = e.getMessage();
