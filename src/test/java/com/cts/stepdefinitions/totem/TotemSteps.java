@@ -31,14 +31,14 @@ public class TotemSteps {
 
     private void setPlayerResource(String playerRef, int count, String resourceStr) {
         PlayerColor color = WorldContext.parsePlayerColor(playerRef);
-        Resource resource = parseResource(resourceStr);
+        Resource resource = WorldContext.parseResource(resourceStr);
         Map<Resource, Integer> counts = world.getPlayerResources().computeIfAbsent(color, k -> new EnumMap<>(Resource.class));
         counts.put(resource, count);
     }
 
     @Given("aucun joueur ne possede de ressource {word}")
     public void aucunJoueurNePossedeDeRessource(String resourceStr) {
-        Resource resource = parseResource(resourceStr);
+        Resource resource = WorldContext.parseResource(resourceStr);
         for (Map<Resource, Integer> counts : world.getPlayerResources().values()) {
             counts.remove(resource);
         }
@@ -46,7 +46,7 @@ public class TotemSteps {
 
     @Given("le totem {word} appartient a {string}")
     public void leTotemAppartientA(String resourceStr, String playerRef) {
-        world.getTotemOwners().put(parseResource(resourceStr), WorldContext.parsePlayerColor(playerRef));
+        world.getTotemOwners().put(WorldContext.parseResource(resourceStr), WorldContext.parsePlayerColor(playerRef));
     }
 
     @Given("{string} possede le totem {word}")
@@ -63,7 +63,7 @@ public class TotemSteps {
 
     @Then("le totem {word} revient a {string}")
     public void leTotemRevientA(String resourceStr, String playerRef) {
-        PlayerColor owner = world.getTotemOwners().get(parseResource(resourceStr));
+        PlayerColor owner = world.getTotemOwners().get(WorldContext.parseResource(resourceStr));
         assertEquals(WorldContext.parsePlayerColor(playerRef), owner);
     }
 
@@ -74,17 +74,8 @@ public class TotemSteps {
 
     @Then("le totem {word} n est attribue a personne")
     public void leTotemNAttribueAPersonne(String resourceStr) {
-        PlayerColor owner = world.getTotemOwners().get(parseResource(resourceStr));
+        PlayerColor owner = world.getTotemOwners().get(WorldContext.parseResource(resourceStr));
         assertNull(owner);
     }
 
-    private Resource parseResource(String s) {
-        return switch (s.toLowerCase()) {
-            case "mammouth" -> Resource.MAMMOUTH;
-            case "poisson" -> Resource.POISSON;
-            case "champignon" -> Resource.CHAMPIGNON;
-            case "silex" -> Resource.SILEX;
-            default -> throw new IllegalArgumentException("Ressource inconnue: " + s);
-        };
-    }
 }

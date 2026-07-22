@@ -4,6 +4,7 @@ import com.cts.domain.model.board.Kingdom;
 import com.cts.domain.model.common.Resource;
 import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.scoring.ScoreResult;
+import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
 import com.cts.domain.service.game.GameService;
 import java.util.EnumMap;
@@ -130,5 +131,28 @@ public class WorldContext {
             return ref.substring(0, ref.indexOf('(')).trim();
         }
         return ref.trim();
+    }
+
+    public static Terrain parseTerrain(String s) {
+        return switch (s.toLowerCase()) {
+            case "volcan" -> Terrain.VOLCAN;
+            case "steppe" -> Terrain.STEPPE;
+            case "lac" -> Terrain.LAC;
+            case "jungle" -> Terrain.JUNGLE;
+            case "carriere" -> Terrain.CARRIERE;
+            case "desert" -> Terrain.DESERT;
+            case "chateau" -> Terrain.CHATEAU;
+            default -> throw new IllegalArgumentException("Terrain inconnu: " + s);
+        };
+    }
+
+    public static Resource parseResource(String s) {
+        return switch (s.toLowerCase()) {
+            case "mammouth" -> Resource.MAMMOUTH;
+            case "poisson" -> Resource.POISSON;
+            case "champignon" -> Resource.CHAMPIGNON;
+            case "silex" -> Resource.SILEX;
+            default -> throw new IllegalArgumentException("Ressource inconnue: " + s);
+        };
     }
 }

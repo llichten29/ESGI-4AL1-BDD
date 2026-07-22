@@ -1,11 +1,8 @@
 package com.cts.stepdefinitions.common;
 
-import com.cts.domain.model.player.Player;
-import com.cts.domain.model.tile.Tile;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameLoopSteps {
@@ -19,15 +16,7 @@ public class GameLoopSteps {
     @When("tous les joueurs choisissent un domino")
     public void tousLesJoueursChoisissentUnDomino() {
         assertNotNull(world.getGame());
-        List<Tile> available = world.getGame().getCurrentDraft().getUnchosenTiles();
-        int idx = 0;
-        for (Player p : world.getGame().getPlayers()) {
-            if (!p.hasChosen() && idx < available.size()) {
-                Tile tile = available.get(idx);
-                world.getGame().selectTileByNumber(p, tile.getNumber());
-                idx++;
-            }
-        }
+        world.getGame().autoSelectTiles();
     }
 
     @When("le tour suivant commence")
@@ -39,17 +28,7 @@ public class GameLoopSteps {
     @When("on joue jusqu'a la derniere ligne")
     public void onJoueJusquALaDerniereLigne() {
         assertNotNull(world.getGame());
-        while (world.getGame().canAdvance()) {
-            List<Tile> available = world.getGame().getCurrentDraft().getUnchosenTiles();
-            int idx = 0;
-            for (Player p : world.getGame().getPlayers()) {
-                if (idx < available.size()) {
-                    world.getGame().selectTileByNumber(p, available.get(idx).getNumber());
-                    idx++;
-                }
-            }
-            world.getGame().advanceRound();
-        }
+        world.getGame().playUntilEnd();
     }
 
     @Then("une nouvelle draft de {int} dominos est disponible")

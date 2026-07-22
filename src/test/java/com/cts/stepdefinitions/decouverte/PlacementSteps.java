@@ -8,6 +8,7 @@ import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
 import com.cts.domain.model.tile.TileCell;
 import com.cts.domain.service.board.BoardService;
+import com.cts.fixture.KingdomBuilder;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -36,39 +37,16 @@ public class PlacementSteps {
 
     @Given("le joueur a deja pose un domino {word}-{word} en \\({int},{int}\\) et \\({int},{int}\\)")
     public void leJoueurADejaPoseUnDomino(String t1, String t2, int x1, int y1, int x2, int y2) {
-        Terrain terrainA = parseTerrain(t1);
-        Terrain terrainB = parseTerrain(t2);
+        Terrain terrainA = WorldContext.parseTerrain(t1);
+        Terrain terrainB = WorldContext.parseTerrain(t2);
         Tile tile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
         new BoardService().place(world.getKingdom(), tile, new Position(x1, y1), new Position(x2, y2));
     }
 
     @Given("le joueur a deja pose une {word} en \\({int},{int}\\)")
     public void leJoueurADejaPose(String terrainStr, int x, int y) {
-        Terrain terrain = parseTerrain(terrainStr);
-        Position target = new Position(x, y);
-
-        if (world.getKingdom().isOccupied(target)) return;
-
-        for (Position occupied : world.getKingdom().getOccupiedPositions()) {
-            if (target.isAdjacent(occupied)) {
-                Position other = world.getKingdom().findAdjacentFreePosition(target);
-                if (other != null) {
-                    Tile tile = new Tile(0, new TileCell(terrain, 0), new TileCell(terrain, 0));
-                    new BoardService().place(world.getKingdom(), tile, target, other);
-                    return;
-                }
-            }
-        }
-
-        Position adj = world.getKingdom().findAdjacentOccupied(target);
-        if (adj != null) {
-            Tile tile = new Tile(0, new TileCell(terrain, 0), new TileCell(Terrain.DESERT, 0));
-            TileCell cellAtTarget = (target.equals(adj)) ? tile.getCellB() : tile.getCellA();
-            if (cellAtTarget.getTerrain() != terrain) {
-                tile = new Tile(0, new TileCell(Terrain.DESERT, 0), new TileCell(terrain, 0));
-            }
-            new BoardService().place(world.getKingdom(), tile, adj, target);
-        }
+        Terrain terrain = WorldContext.parseTerrain(terrainStr);
+        new KingdomBuilder(world.getKingdom()).placeSingleCell(terrain, x, y);
     }
 
     @Given("un volcan en \\({int},{int}\\) avec feu {int}")
@@ -78,7 +56,7 @@ public class PlacementSteps {
 
     @Given("une case {word} en \\({int},{int}\\) avec icone feu {int}")
     public void uneCaseEnAvecIconeFeu(String terrainStr, int x, int y, int fireCount) {
-        Terrain terrain = parseTerrain(terrainStr);
+        Terrain terrain = WorldContext.parseTerrain(terrainStr);
         world.getKingdom().placeCell(new Position(x, y), new TileCell(terrain, fireCount));
     }
 
@@ -94,8 +72,8 @@ public class PlacementSteps {
 
     @When("le joueur pose un domino {word}-{word} en \\({int},{int}\\) et \\({int},{int}\\)")
     public void leJoueurPoseUnDomino(String t1, String t2, int x1, int y1, int x2, int y2) {
-        Terrain terrainA = parseTerrain(t1);
-        Terrain terrainB = parseTerrain(t2);
+        Terrain terrainA = WorldContext.parseTerrain(t1);
+        Terrain terrainB = WorldContext.parseTerrain(t2);
         int fireA = BoardService.getFireCountForVolcano(terrainA, terrainB);
         int fireB = BoardService.getFireCountForVolcano(terrainB, terrainA);
         currentTile = new Tile(0, new TileCell(terrainA, fireA), new TileCell(terrainB, fireB));
@@ -137,16 +115,16 @@ public class PlacementSteps {
 
     @When("le joueur cherche les positions valides pour un domino {word}-{word}")
     public void leJoueurCherchePositionsValides(String t1, String t2) {
-        Terrain terrainA = parseTerrain(t1);
-        Terrain terrainB = parseTerrain(t2);
+        Terrain terrainA = WorldContext.parseTerrain(t1);
+        Terrain terrainB = WorldContext.parseTerrain(t2);
         currentTile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
         validPositions = new BoardService().findValidPlacements(world.getKingdom(), currentTile);
     }
 
     @When("le joueur recoit un domino {word}-{word}")
     public void leJoueurRecoitUnDomino(String t1, String t2) {
-        Terrain terrainA = parseTerrain(t1);
-        Terrain terrainB = parseTerrain(t2);
+        Terrain terrainA = WorldContext.parseTerrain(t1);
+        Terrain terrainB = WorldContext.parseTerrain(t2);
         currentTile = new Tile(0, new TileCell(terrainA, 0), new TileCell(terrainB, 0));
     }
 
@@ -259,19 +237,6 @@ public class PlacementSteps {
     @Then("le jeton feu est defausse")
     public void leJetonFeuEstDefausse() {
         leJetonFeuNePeutPasEtrePlace();
-    }
-
-    private Terrain parseTerrain(String s) {
-        return switch (s.toLowerCase()) {
-            case "volcan" -> Terrain.VOLCAN;
-            case "steppe" -> Terrain.STEPPE;
-            case "lac" -> Terrain.LAC;
-            case "jungle" -> Terrain.JUNGLE;
-            case "carriere" -> Terrain.CARRIERE;
-            case "desert" -> Terrain.DESERT;
-            case "chateau" -> Terrain.CHATEAU;
-            default -> throw new IllegalArgumentException("Terrain inconnu: " + s);
-        };
     }
 
 }

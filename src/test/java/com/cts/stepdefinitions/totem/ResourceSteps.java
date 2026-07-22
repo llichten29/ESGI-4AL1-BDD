@@ -1,6 +1,5 @@
 package com.cts.stepdefinitions.totem;
 
-import com.cts.domain.model.board.Kingdom;
 import com.cts.domain.model.board.FireToken;
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.common.Resource;
@@ -27,14 +26,14 @@ public class ResourceSteps {
 
     @Given("une case {word} en \\({int},{int}\\) sans icone feu")
     public void uneCaseSansIconeFeu(String terrainStr, int x, int y) {
-        Terrain terrain = parseTerrain(terrainStr);
+        Terrain terrain = WorldContext.parseTerrain(terrainStr);
         world.getKingdom().placeCell(new Position(x, y), new TileCell(terrain, 0));
     }
 
     @Given("une case {word} en \\({int},{int}\\) contenant une ressource {word}")
     public void uneCaseContenantUneRessource(String terrainStr, int x, int y, String resourceStr) {
-        Terrain terrain = parseTerrain(terrainStr);
-        Resource resource = parseResource(resourceStr);
+        Terrain terrain = WorldContext.parseTerrain(terrainStr);
+        Resource resource = WorldContext.parseResource(resourceStr);
         Position pos = new Position(x, y);
         world.getKingdom().placeCell(pos, new TileCell(terrain, 0, resource));
         addPlayerResource(PlayerColor.ROSE, resource, 1);
@@ -47,9 +46,9 @@ public class ResourceSteps {
 
     @Given("le joueur recoit un domino {word}-{word} avec une ressource {word}")
     public void leJoueurRecoitUnDominoAvecUneRessource(String t1, String t2, String resourceStr) {
-        Resource resource = parseResource(resourceStr);
-        Terrain terrainA = parseTerrain(t1);
-        Terrain terrainB = parseTerrain(t2);
+        Resource resource = WorldContext.parseResource(resourceStr);
+        Terrain terrainA = WorldContext.parseTerrain(t1);
+        Terrain terrainB = WorldContext.parseTerrain(t2);
         TileCell cellA = new TileCell(terrainA, 0, resource);
         TileCell cellB = new TileCell(terrainB, 0, null);
         world.setCurrentTile(new Tile(0, cellA, cellB));
@@ -57,9 +56,9 @@ public class ResourceSteps {
 
     @Given("le joueur recoit un domino {word}-{word} avec {int} ressources {word}")
     public void leJoueurRecoitUnDominoAvecNRessources(String t1, String t2, int count, String resourceStr) {
-        Resource resource = parseResource(resourceStr);
-        Terrain terrainA = parseTerrain(t1);
-        Terrain terrainB = parseTerrain(t2);
+        Resource resource = WorldContext.parseResource(resourceStr);
+        Terrain terrainA = WorldContext.parseTerrain(t1);
+        Terrain terrainB = WorldContext.parseTerrain(t2);
         TileCell cellA = new TileCell(terrainA, 0, count >= 1 ? resource : null);
         TileCell cellB = new TileCell(terrainB, 0, count >= 2 ? resource : null);
         world.setCurrentTile(new Tile(0, cellA, cellB));
@@ -88,9 +87,8 @@ public class ResourceSteps {
         Position volcanoPos = findVolcano();
         assertNotNull(volcanoPos, "Aucun volcan dans le royaume");
 
-        new BoardService().placeFireToken(world.getKingdom(), target, volcanoPos, new FireToken(value));
-
-        Resource destroyed = resourceService.destroyResource(world.getKingdom(), target);
+        Resource destroyed = new BoardService().placeFireTokenAndDestroyResource(
+            world.getKingdom(), target, volcanoPos, new FireToken(value));
         if (destroyed != null) {
             Map<Resource, Integer> counts = world.getPlayerResources().get(PlayerColor.ROSE);
             if (counts != null) {
@@ -104,7 +102,7 @@ public class ResourceSteps {
         TileCell cell = world.getKingdom().getCell(new Position(x, y));
         assertNotNull(cell);
         assertNotNull(cell.getResource());
-        assertEquals(parseResource(resourceStr), cell.getResource());
+        assertEquals(WorldContext.parseResource(resourceStr), cell.getResource());
     }
 
     @Then("la case \\({int},{int}\\) ne contient aucune ressource")
@@ -126,7 +124,7 @@ public class ResourceSteps {
 
     private void assertPlayerResource(String playerRef, int expectedCount, String resourceStr) {
         PlayerColor color = WorldContext.parsePlayerColor(playerRef);
-        Resource resource = parseResource(resourceStr);
+        Resource resource = WorldContext.parseResource(resourceStr);
         Map<Resource, Integer> counts = world.getPlayerResources().get(color);
         int actual = counts != null ? counts.getOrDefault(resource, 0) : 0;
         assertEquals(expectedCount, actual);
@@ -147,26 +145,4 @@ public class ResourceSteps {
         return null;
     }
 
-    private Resource parseResource(String s) {
-        return switch (s.toLowerCase()) {
-            case "mammouth" -> Resource.MAMMOUTH;
-            case "poisson" -> Resource.POISSON;
-            case "champignon" -> Resource.CHAMPIGNON;
-            case "silex" -> Resource.SILEX;
-            default -> throw new IllegalArgumentException("Ressource inconnue: " + s);
-        };
-    }
-
-    private Terrain parseTerrain(String s) {
-        return switch (s.toLowerCase()) {
-            case "volcan" -> Terrain.VOLCAN;
-            case "steppe" -> Terrain.STEPPE;
-            case "lac" -> Terrain.LAC;
-            case "jungle" -> Terrain.JUNGLE;
-            case "carriere" -> Terrain.CARRIERE;
-            case "desert" -> Terrain.DESERT;
-            case "chateau" -> Terrain.CHATEAU;
-            default -> throw new IllegalArgumentException("Terrain inconnu: " + s);
-        };
-    }
 }
