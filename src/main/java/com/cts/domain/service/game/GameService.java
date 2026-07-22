@@ -6,24 +6,18 @@ import com.cts.domain.model.common.GameMode;
 import com.cts.domain.model.player.Draft;
 import com.cts.domain.model.player.Player;
 import com.cts.domain.model.player.PlayerColor;
-import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
-import com.cts.domain.model.tile.TileCell;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 public class GameService {
 
-    private final List<Tile> drawPile;
+    private final DrawPile drawPile;
+    private final RoundManager roundManager;
     private final List<Player> players;
-    private Draft currentDraft;
     private final long seed;
     private final GameMode gameMode;
-    private int turnNumber;
-    private Tile lastDiscardedTile;
 
     private static final PlayerColor[] DEFAULT_COLORS = {
         PlayerColor.ROSE, PlayerColor.NOIR, PlayerColor.VERT, PlayerColor.BLEU
@@ -49,11 +43,8 @@ public class GameService {
         }
         this.seed = seed;
         this.gameMode = gameMode;
-        this.turnNumber = 0;
-
-        List<Tile> allTiles = createAllTiles();
-        Collections.shuffle(allTiles, new Random(seed));
-        this.drawPile = new ArrayList<>(allTiles);
+        this.drawPile = new DrawPile(seed);
+        this.roundManager = new RoundManager();
 
         this.players = new ArrayList<>();
         for (int i = 0; i < playerCount; i++) {
@@ -65,36 +56,23 @@ public class GameService {
     }
 
     public void prepareNextDraft() {
-        int tilesToDraw = Math.min(4, drawPile.size());
-        List<Tile> draftTiles = new ArrayList<>(drawPile.subList(0, tilesToDraw));
-        drawPile.subList(0, tilesToDraw).clear();
-        draftTiles.sort(Comparator.comparingInt(Tile::getNumber));
-        currentDraft = new Draft(draftTiles);
-        turnNumber++;
+        roundManager.prepareNextDraft(drawPile);
     }
 
     public void advanceRound() {
-        if (turnNumber >= 12) {
-            throw new IllegalStateException("la derniere ligne est deja formee");
-        }
-        List<Tile> unchosen = currentDraft.getUnchosenTiles();
-        lastDiscardedTile = unchosen.isEmpty() ? null : unchosen.get(0);
-        for (Player p : players) {
-            p.resetChoice();
-        }
-        prepareNextDraft();
+        roundManager.advanceRound(drawPile, players);
     }
 
     public boolean canAdvance() {
-        return turnNumber < 12;
+        return roundManager.canAdvance();
     }
 
     public boolean isGameOver() {
-        return turnNumber >= 12;
+        return roundManager.isGameOver();
     }
 
     public Tile getLastDiscardedTile() {
-        return lastDiscardedTile;
+        return roundManager.getLastDiscardedTile();
     }
 
     public GameMode getGameMode() {
@@ -102,13 +80,14 @@ public class GameService {
     }
 
     public void selectTileByNumber(Player player, int tileNumber) {
-        Tile tile = findTileInDraft(tileNumber);
+        Draft draft = roundManager.getCurrentDraft();
+        Tile tile = findTileInDraft(tileNumber, draft);
         if (tile == null) {
             throw new InvalidSelectionException(
                 "domino numero " + tileNumber + " pas dans la draft"
             );
         }
-        if (currentDraft.isTileNumberChosen(tileNumber)) {
+        if (draft.isTileNumberChosen(tileNumber)) {
             throw new InvalidSelectionException(
                 "domino numero " + tileNumber + " deja choisi"
             );
@@ -119,7 +98,7 @@ public class GameService {
             );
         }
         player.chooseTile(tile);
-        currentDraft.markChosen(tileNumber);
+        draft.markChosen(tileNumber);
     }
 
     public List<Player> getTurnOrder() {
@@ -154,8 +133,8 @@ public class GameService {
         return null;
     }
 
-    private Tile findTileInDraft(int tileNumber) {
-        return currentDraft.getTiles().stream()
+    private Tile findTileInDraft(int tileNumber, Draft draft) {
+        return draft.getTiles().stream()
             .filter(t -> t.getNumber() == tileNumber)
             .findFirst()
             .orElse(null);
@@ -166,11 +145,11 @@ public class GameService {
     }
 
     public List<Tile> getDrawPile() {
-        return Collections.unmodifiableList(drawPile);
+        return drawPile.getAll();
     }
 
     public Draft getCurrentDraft() {
-        return currentDraft;
+        return roundManager.getCurrentDraft();
     }
 
     public List<Player> getPlayers() {
@@ -182,50 +161,7 @@ public class GameService {
     }
 
     public int getTurnNumber() {
-        return turnNumber;
+        return roundManager.getTurnNumber();
     }
 
-    private static List<Tile> createAllTiles() {
-        List<Tile> tiles = new ArrayList<>();
-        int number = 1;
-
-        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.STEPPE, 0, 0, 3);
-        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.LAC, 0, 1, 2);
-        number = addTiles(tiles, number, Terrain.LAC, Terrain.LAC, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.JUNGLE, Terrain.JUNGLE, 1, 0, 3);
-        number = addTiles(tiles, number, Terrain.JUNGLE, Terrain.CARRIERE, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.CARRIERE, Terrain.CARRIERE, 1, 0, 2);
-        number = addTiles(tiles, number, Terrain.DESERT, Terrain.DESERT, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.JUNGLE, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.CARRIERE, 1, 0, 2);
-        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.DESERT, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.LAC, Terrain.JUNGLE, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.LAC, Terrain.CARRIERE, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.LAC, Terrain.DESERT, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.JUNGLE, Terrain.DESERT, 1, 0, 2);
-        number = addTiles(tiles, number, Terrain.CARRIERE, Terrain.DESERT, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.VOLCAN, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.LAC, Terrain.VOLCAN, 0, 1, 2);
-        number = addTiles(tiles, number, Terrain.JUNGLE, Terrain.VOLCAN, 0, 2, 2);
-        number = addTiles(tiles, number, Terrain.CARRIERE, Terrain.VOLCAN, 0, 0, 2);
-        number = addTiles(tiles, number, Terrain.DESERT, Terrain.VOLCAN, 0, 3, 2);
-        number = addTiles(tiles, number, Terrain.VOLCAN, Terrain.VOLCAN, 1, 1, 2);
-        number = addTiles(tiles, number, Terrain.VOLCAN, Terrain.VOLCAN, 2, 0, 2);
-        number = addTiles(tiles, number, Terrain.STEPPE, Terrain.STEPPE, 1, 0, 1);
-        addTiles(tiles, number, Terrain.LAC, Terrain.LAC, 1, 0, 1);
-
-        return tiles;
-    }
-
-    private static int addTiles(List<Tile> tiles, int startNumber,
-                                  Terrain t1, Terrain t2,
-                                  int fire1, int fire2,
-                                  int count) {
-        int n = startNumber;
-        for (int i = 0; i < count; i++) {
-            tiles.add(new Tile(n, new TileCell(t1, fire1), new TileCell(t2, fire2)));
-            n++;
-        }
-        return n;
-    }
 }
