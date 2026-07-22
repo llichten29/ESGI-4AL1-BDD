@@ -4,7 +4,7 @@ Feature: Volcans et jetons Feu
     Et les placer sur mon royaume pour marquer plus de points
 
     Background:
-        Given un joueur "Alice" avec la tuile depart en position (2,2)
+        Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)
 
     # --- Création des jetons Feu (1ère itération) ---
 

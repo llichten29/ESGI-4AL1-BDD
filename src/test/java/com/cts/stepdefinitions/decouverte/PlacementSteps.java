@@ -28,8 +28,8 @@ public class PlacementSteps {
         this.world = world;
     }
 
-    @Given("un joueur {word} avec la tuile depart en position \\({int},{int}\\)")
-    public void unJoueurAvecTuileDepart(String color, int x, int y) {
+    @Given("un joueur {string} avec la tuile depart en position \\({int},{int}\\)")
+    public void unJoueurAvecTuileDepart(String playerRef, int x, int y) {
         world.kingdom = new Kingdom();
         assertEquals(Terrain.CHATEAU, world.kingdom.getCell(new Position(x, y)).getTerrain());
     }

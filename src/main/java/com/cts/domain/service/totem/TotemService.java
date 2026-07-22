@@ -3,6 +3,7 @@ package com.cts.domain.service.totem;
 import com.cts.domain.model.board.Kingdom;
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.common.Resource;
+import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile.TileCell;
 import java.util.EnumMap;
@@ -12,32 +13,30 @@ public class TotemService {
 
     private static final int TOTEM_POINTS = 5;
 
-    // -- Totem allocation --
-
     public int getTotemPoints() {
         return TOTEM_POINTS;
     }
 
-    public Map<Resource, String> allocateTotems(
-            Map<String, Map<Resource, Integer>> allPlayerResources,
-            Map<Resource, String> currentOwners) {
-        Map<Resource, String> result = new EnumMap<>(Resource.class);
+    public Map<Resource, PlayerColor> allocateTotems(
+            Map<PlayerColor, Map<Resource, Integer>> allPlayerResources,
+            Map<Resource, PlayerColor> currentOwners) {
+        Map<Resource, PlayerColor> result = new EnumMap<>(Resource.class);
         for (Resource resource : Resource.values()) {
-            String owner = findMajorityOwner(allPlayerResources, resource, currentOwners.get(resource));
+            PlayerColor owner = findMajorityOwner(allPlayerResources, resource, currentOwners.get(resource));
             result.put(resource, owner);
         }
         return result;
     }
 
-    private String findMajorityOwner(
-            Map<String, Map<Resource, Integer>> allPlayerResources,
+    private PlayerColor findMajorityOwner(
+            Map<PlayerColor, Map<Resource, Integer>> allPlayerResources,
             Resource resource,
-            String currentOwner) {
-        String topPlayer = null;
+            PlayerColor currentOwner) {
+        PlayerColor topPlayer = null;
         int topCount = 0;
         boolean tie = false;
 
-        for (Map.Entry<String, Map<Resource, Integer>> entry : allPlayerResources.entrySet()) {
+        for (Map.Entry<PlayerColor, Map<Resource, Integer>> entry : allPlayerResources.entrySet()) {
             int count = entry.getValue().getOrDefault(resource, 0);
             if (count > topCount) {
                 topCount = count;
@@ -51,8 +50,6 @@ public class TotemService {
         if (tie) return currentOwner;
         return topPlayer;
     }
-
-    // -- Resource placement on cells --
 
     public Resource getResourceForTerrain(Terrain terrain) {
         return switch (terrain) {

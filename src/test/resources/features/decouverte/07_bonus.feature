@@ -4,7 +4,7 @@ Feature: Bonus optionnels (Empire du Feu et Homo Habilis)
     Afin de recompenser la maitrise de mon territoire
 
     Background:
-        Given un joueur "Alice" avec la tuile depart en position (2,2)
+        Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)
 
     # --- Empire du Feu ---
 

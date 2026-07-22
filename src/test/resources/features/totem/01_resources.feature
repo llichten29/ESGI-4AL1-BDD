@@ -4,7 +4,7 @@ Feature: Ressources en Mode Totem
     Afin de gagner des tuiles Totem et des points
 
     Background:
-        Given un joueur "Alice" avec la tuile depart en position (2,2)
+        Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)
 
     # --- Attribution des ressources selon le terrain ---
 
@@ -49,13 +49,13 @@ Feature: Ressources en Mode Totem
         Given le joueur a deja pose une steppe en (1,2)
         And le joueur recoit un domino steppe-lac avec une ressource Mammouth
         When le joueur pose le domino en (2,1) et (2,0)
-        Then Alice possede bien 1 ressource Mammouth
+        Then "Alice (rose)" possede bien 1 ressource Mammouth
 
     Scenario: Joueur collecte deux ressources sur un meme domino
         Given le joueur a deja pose une steppe en (1,2)
         And le joueur recoit un domino steppe-steppe avec 2 ressources Mammouth
         When le joueur pose le domino en (3,2) et (3,1)
-        Then Alice possede bien 2 ressources Mammouth
+        Then "Alice (rose)" possede bien 2 ressources Mammouth
 
     # --- Destruction par le feu ---
 
@@ -64,7 +64,7 @@ Feature: Ressources en Mode Totem
         And un volcan en (1,2) avec feu 1
         When le joueur projette le jeton feu de valeur 1 sur la case (2,1)
         Then la case (2,1) ne contient aucune ressource
-        And Alice possede bien 0 ressource Mammouth
+        And "Alice (rose)" possede bien 0 ressource Mammouth
 
     Scenario: Projeter le feu sur une case sans ressource ne change rien
         Given une case steppe en (2,1) sans icone feu

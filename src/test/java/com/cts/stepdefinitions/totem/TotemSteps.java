@@ -1,6 +1,7 @@
 package com.cts.stepdefinitions.totem;
 
 import com.cts.domain.model.common.Resource;
+import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.service.totem.TotemService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
@@ -18,19 +19,20 @@ public class TotemSteps {
         this.world = world;
     }
 
-    @Given("{word} possede {int} ressources {word}")
-    public void joueurPossedeRessources(String player, int count, String resourceStr) {
-        setPlayerResource(player, count, resourceStr);
+    @Given("{string} possede {int} ressources {word}")
+    public void joueurPossedeRessources(String playerRef, int count, String resourceStr) {
+        setPlayerResource(playerRef, count, resourceStr);
     }
 
-    @Given("{word} possede {int} ressource {word}")
-    public void joueurPossedeRessourceSingulier(String player, int count, String resourceStr) {
-        setPlayerResource(player, count, resourceStr);
+    @Given("{string} possede {int} ressource {word}")
+    public void joueurPossedeRessourceSingulier(String playerRef, int count, String resourceStr) {
+        setPlayerResource(playerRef, count, resourceStr);
     }
 
-    private void setPlayerResource(String player, int count, String resourceStr) {
+    private void setPlayerResource(String playerRef, int count, String resourceStr) {
+        PlayerColor color = WorldContext.parsePlayerColor(playerRef);
         Resource resource = parseResource(resourceStr);
-        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(player, k -> new EnumMap<>(Resource.class));
+        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(color, k -> new EnumMap<>(Resource.class));
         counts.put(resource, count);
     }
 
@@ -42,36 +44,36 @@ public class TotemSteps {
         }
     }
 
-    @Given("le totem {word} appartient a {word}")
-    public void leTotemAppartientA(String resourceStr, String player) {
-        world.totemOwners.put(parseResource(resourceStr), player);
+    @Given("le totem {word} appartient a {string}")
+    public void leTotemAppartientA(String resourceStr, String playerRef) {
+        world.totemOwners.put(parseResource(resourceStr), WorldContext.parsePlayerColor(playerRef));
     }
 
-    @Given("{word} possede le totem {word}")
-    public void joueurPossedeLeTotem(String player, String resourceStr) {
-        leTotemAppartientA(resourceStr, player);
+    @Given("{string} possede le totem {word}")
+    public void joueurPossedeLeTotem(String playerRef, String resourceStr) {
+        leTotemAppartientA(resourceStr, playerRef);
     }
 
     @When("les totems sont reevalues")
     public void lesTotemsSontReevalues() {
-        Map<Resource, String> currentOwners = new EnumMap<>(world.totemOwners);
+        Map<Resource, PlayerColor> currentOwners = new EnumMap<>(world.totemOwners);
         world.totemOwners = totemService.allocateTotems(world.playerResources, currentOwners);
     }
 
-    @Then("le totem {word} revient a {word}")
-    public void leTotemRevientA(String resourceStr, String player) {
-        String owner = world.totemOwners.get(parseResource(resourceStr));
-        assertEquals(player, owner);
+    @Then("le totem {word} revient a {string}")
+    public void leTotemRevientA(String resourceStr, String playerRef) {
+        PlayerColor owner = world.totemOwners.get(parseResource(resourceStr));
+        assertEquals(WorldContext.parsePlayerColor(playerRef), owner);
     }
 
-    @Then("le totem {word} reste chez {word}")
-    public void leTotemResteChez(String resourceStr, String player) {
-        leTotemRevientA(resourceStr, player);
+    @Then("le totem {word} reste chez {string}")
+    public void leTotemResteChez(String resourceStr, String playerRef) {
+        leTotemRevientA(resourceStr, playerRef);
     }
 
     @Then("le totem {word} n est attribue a personne")
     public void leTotemNAttribueAPersonne(String resourceStr) {
-        String owner = world.totemOwners.get(parseResource(resourceStr));
+        PlayerColor owner = world.totemOwners.get(parseResource(resourceStr));
         assertNull(owner);
     }
 

@@ -5,6 +5,7 @@ import com.cts.domain.exception.InvalidSelectionException;
 import com.cts.domain.model.common.GameMode;
 import com.cts.domain.model.player.Draft;
 import com.cts.domain.model.player.Player;
+import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
 import com.cts.domain.model.tile.Tile.TileCell;
@@ -23,6 +24,10 @@ public class GameService {
     private final GameMode gameMode;
     private int turnNumber;
     private Tile lastDiscardedTile;
+
+    private static final PlayerColor[] DEFAULT_COLORS = {
+        PlayerColor.ROSE, PlayerColor.NOIR, PlayerColor.VERT, PlayerColor.BLEU
+    };
 
     public GameService(int playerCount, long seed) {
         this(playerCount, seed, GameMode.DECOUVERTE, new String[]{"Alice", "Bastien", "Camille", "David"});
@@ -52,7 +57,8 @@ public class GameService {
 
         this.players = new ArrayList<>();
         for (int i = 0; i < playerCount; i++) {
-            players.add(new Player(playerNames[i]));
+            PlayerColor color = (i < DEFAULT_COLORS.length) ? DEFAULT_COLORS[i] : PlayerColor.ROSE;
+            players.add(new Player(playerNames[i], color));
         }
 
         prepareNextDraft();
@@ -130,9 +136,18 @@ public class GameService {
         return Collections.unmodifiableList(ordered);
     }
 
-    public Player findPlayerByColor(String color) {
+    public Player findPlayerByColor(PlayerColor color) {
         for (Player p : getPlayers()) {
-            if (p.getColor().equals(color)) {
+            if (p.getColor() == color) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public Player findPlayerByName(String name) {
+        for (Player p : getPlayers()) {
+            if (p.getName().equals(name)) {
                 return p;
             }
         }

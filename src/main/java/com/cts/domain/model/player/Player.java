@@ -3,14 +3,20 @@ package com.cts.domain.model.player;
 import com.cts.domain.model.tile.Tile;
 
 public class Player {
-    private final String color;
+    private final String name;
+    private final PlayerColor color;
     private Tile chosenTile;
 
-    public Player(String color) {
+    public Player(String name, PlayerColor color) {
+        this.name = name;
         this.color = color;
     }
 
-    public String getColor() {
+    public String getName() {
+        return name;
+    }
+
+    public PlayerColor getColor() {
         return color;
     }
 

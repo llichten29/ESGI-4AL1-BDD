@@ -4,7 +4,7 @@ Feature: Placement des dominos
     Afin de developper mon royaume
 
     Background:
-        Given un joueur "Alice" avec la tuile depart en position (2,2)
+        Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)
 
     Scenario: Poser le premier domino adjacent a la tuile depart
         When le joueur pose un domino steppe-lac en (2,1) et (2,0)

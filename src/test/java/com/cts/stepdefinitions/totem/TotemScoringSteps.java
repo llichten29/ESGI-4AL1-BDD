@@ -2,6 +2,7 @@ package com.cts.stepdefinitions.totem;
 
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.common.Resource;
+import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.scoring.ScoreResult;
 import com.cts.domain.model.tile.Tile.TileCell;
 import com.cts.domain.service.scoring.DecouverteScoringService;
@@ -25,10 +26,11 @@ public class TotemScoringSteps {
     }
 
     @Given("^le joueur \"([^\"]+)\" a un score de (\\d+) avec (\\d+) ressources?$")
-    public void leJoueurAScoreAvecRessources(String player, int score, int resourceCount) {
-        world.resourceCounts.put(player, resourceCount);
+    public void leJoueurAScoreAvecRessources(String playerRef, int score, int resourceCount) {
+        PlayerColor color = WorldContext.parsePlayerColor(playerRef);
+        world.resourceCounts.put(color, resourceCount);
         world.lastScore = new ScoreResult(score, 0, 0);
-        if (player.equals("Alice")) {
+        if (WorldContext.extractPlayerName(playerRef).equals("Alice")) {
             aliceScore = new ScoreResult(score, 0, 0);
         } else {
             bobScore = new ScoreResult(score, 0, 0);
@@ -46,8 +48,8 @@ public class TotemScoringSteps {
     @When("le score de totem est calcule")
     public void leScoreDeTotemEstCalcule() {
         int total = 0;
-        for (Map.Entry<Resource, String> entry : world.totemOwners.entrySet()) {
-            if ("Alice".equals(entry.getValue())) {
+        for (Map.Entry<Resource, PlayerColor> entry : world.totemOwners.entrySet()) {
+            if (PlayerColor.ROSE == entry.getValue()) {
                 total += totemService.getTotemPoints();
             }
         }
@@ -59,8 +61,8 @@ public class TotemScoringSteps {
         ScoreResult base = decouverteService.calculate(world.kingdom);
         int resourcePoints = countResourcesOnCells();
         int totemPoints = 0;
-        for (Map.Entry<Resource, String> entry : world.totemOwners.entrySet()) {
-            if ("Alice".equals(entry.getValue())) {
+        for (Map.Entry<Resource, PlayerColor> entry : world.totemOwners.entrySet()) {
+            if (PlayerColor.ROSE == entry.getValue()) {
                 totemPoints += totemService.getTotemPoints();
             }
         }
@@ -79,27 +81,27 @@ public class TotemScoringSteps {
         int bobTotal = bobScore.totalScore();
 
         if (aliceTotal != bobTotal) {
-            world.winner = aliceTotal > bobTotal ? "Alice" : "Bastien";
+            world.winner = aliceTotal > bobTotal ? PlayerColor.ROSE : PlayerColor.NOIR;
             return;
         }
 
-        int aliceResources = world.resourceCounts.getOrDefault("Alice", 0);
-        int bobResources = world.resourceCounts.getOrDefault("Bastien", 0);
+        int aliceResource = world.resourceCounts.getOrDefault(PlayerColor.ROSE, 0);
+        int bobResource = world.resourceCounts.getOrDefault(PlayerColor.NOIR, 0);
 
-        if (aliceResources != bobResources) {
-            world.winner = aliceResources > bobResources ? "Alice" : "Bastien";
+        if (aliceResource != bobResource) {
+            world.winner = aliceResource > bobResource ? PlayerColor.ROSE : PlayerColor.NOIR;
             return;
         }
 
-        boolean aliceHasTotem = world.totemOwners.values().stream().anyMatch("Alice"::equals);
-        boolean bobHasTotem = world.totemOwners.values().stream().anyMatch("Bastien"::equals);
+        boolean aliceHasTotem = world.totemOwners.values().stream().anyMatch(PlayerColor.ROSE::equals);
+        boolean bobHasTotem = world.totemOwners.values().stream().anyMatch(PlayerColor.NOIR::equals);
 
         if (aliceHasTotem && !bobHasTotem) {
-            world.winner = "Alice";
+            world.winner = PlayerColor.ROSE;
         } else if (bobHasTotem && !aliceHasTotem) {
-            world.winner = "Bastien";
+            world.winner = PlayerColor.NOIR;
         } else {
-            world.winner = "egalite";
+            world.winner = null;
         }
     }
 
@@ -108,9 +110,9 @@ public class TotemScoringSteps {
         assertEquals(expected, world.totemTileScore);
     }
 
-    @Then("{word} est classee devant {word}")
+    @Then("{string} est classee devant {string}")
     public void joueurEstClasseeDevant(String first, String second) {
-        assertEquals(first, world.winner);
+        assertEquals(WorldContext.parsePlayerColor(first), world.winner);
     }
 
     private int countResourcesOnCells() {

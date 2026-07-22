@@ -84,7 +84,7 @@ public class SetupSteps {
         assertEquals(world.game.getPlayers().size(), players.size());
         for (Player p : players) {
             assertNotNull(p);
-            assertNotNull(p.getColor());
+            assertNotNull(p.getName());
         }
     }
 

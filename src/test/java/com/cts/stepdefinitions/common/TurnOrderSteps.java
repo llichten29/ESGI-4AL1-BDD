@@ -2,6 +2,7 @@ package com.cts.stepdefinitions.common;
 
 import com.cts.domain.exception.InvalidSelectionException;
 import com.cts.domain.model.player.Player;
+import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.service.game.GameService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
@@ -24,9 +25,10 @@ public class TurnOrderSteps {
     }
 
     @When("le joueur {string} choisit le domino numero {int}")
-    public void leJoueurChoisitLeDomino(String color, int tileNumber) {
+    public void leJoueurChoisitLeDomino(String playerRef, int tileNumber) {
+        PlayerColor color = WorldContext.parsePlayerColor(playerRef);
         Player player = world.game.findPlayerByColor(color);
-        assertNotNull(player, "Joueur " + color + " introuvable");
+        assertNotNull(player, "Joueur " + playerRef + " introuvable");
         world.game.selectTileByNumber(player, tileNumber);
     }
 
@@ -34,17 +36,17 @@ public class TurnOrderSteps {
     public void lOrdreDeJeuEst(String first, String second, String third, String fourth) {
         List<Player> order = world.game.getTurnOrder();
         assertEquals(4, order.size());
-        assertEquals(first, order.get(0).getColor());
-        assertEquals(second, order.get(1).getColor());
-        assertEquals(third, order.get(2).getColor());
-        assertEquals(fourth, order.get(3).getColor());
+        assertEquals(WorldContext.extractPlayerName(first), order.get(0).getName());
+        assertEquals(WorldContext.extractPlayerName(second), order.get(1).getName());
+        assertEquals(WorldContext.extractPlayerName(third), order.get(2).getName());
+        assertEquals(WorldContext.extractPlayerName(fourth), order.get(3).getName());
     }
 
     @Then("le premier joueur est {string}")
-    public void lePremierJoueurEst(String color) {
+    public void lePremierJoueurEst(String playerRef) {
         List<Player> order = world.game.getTurnOrder();
         assertFalse(order.isEmpty());
-        assertEquals(color, order.get(0).getColor());
+        assertEquals(WorldContext.extractPlayerName(playerRef), order.get(0).getName());
     }
 
     @Then("{int} domino reste sans chef et sera defausse")
@@ -54,7 +56,8 @@ public class TurnOrderSteps {
     }
 
     @Then("le joueur {string} ne peut pas choisir le domino numero {int}")
-    public void leJoueurNePeutPasChoisir(String color, int tileNumber) {
+    public void leJoueurNePeutPasChoisir(String playerRef, int tileNumber) {
+        PlayerColor color = WorldContext.parsePlayerColor(playerRef);
         Player player = world.game.findPlayerByColor(color);
         assertNotNull(player);
         Player finalPlayer = player;

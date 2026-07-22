@@ -4,6 +4,7 @@ import com.cts.domain.model.board.Kingdom;
 import com.cts.domain.model.board.Kingdom.FireToken;
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.common.Resource;
+import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
 import com.cts.domain.model.tile.Tile.TileCell;
@@ -36,7 +37,7 @@ public class ResourceSteps {
         Resource resource = parseResource(resourceStr);
         Position pos = new Position(x, y);
         world.kingdom.placeCell(pos, new TileCell(terrain, 0, resource));
-        addPlayerResource("Alice", resource, 1);
+        addPlayerResource(PlayerColor.ROSE, resource, 1);
     }
 
     @Given("une case {word} en \\({int},{int}\\) sans icone feu contenant une ressource {word}")
@@ -87,7 +88,7 @@ public class ResourceSteps {
 
         Resource destroyed = resourceService.destroyResource(world.kingdom, target);
         if (destroyed != null) {
-            Map<Resource, Integer> counts = world.playerResources.get("Alice");
+            Map<Resource, Integer> counts = world.playerResources.get(PlayerColor.ROSE);
             if (counts != null) {
                 counts.put(destroyed, counts.getOrDefault(destroyed, 0) - 1);
             }
@@ -109,25 +110,26 @@ public class ResourceSteps {
         assertNull(cell.getResource());
     }
 
-    @Then("{word} possede bien {int} ressource {word}")
-    public void joueurPossedeRessourceSingulier(String playerName, int expectedCount, String resourceStr) {
-        assertPlayerResource(playerName, expectedCount, resourceStr);
+    @Then("{string} possede bien {int} ressource {word}")
+    public void joueurPossedeRessourceSingulier(String playerRef, int expectedCount, String resourceStr) {
+        assertPlayerResource(playerRef, expectedCount, resourceStr);
     }
 
-    @Then("{word} possede bien {int} ressources {word}")
-    public void joueurPossedeRessources(String playerName, int expectedCount, String resourceStr) {
-        assertPlayerResource(playerName, expectedCount, resourceStr);
+    @Then("{string} possede bien {int} ressources {word}")
+    public void joueurPossedeRessources(String playerRef, int expectedCount, String resourceStr) {
+        assertPlayerResource(playerRef, expectedCount, resourceStr);
     }
 
-    private void assertPlayerResource(String playerName, int expectedCount, String resourceStr) {
+    private void assertPlayerResource(String playerRef, int expectedCount, String resourceStr) {
+        PlayerColor color = WorldContext.parsePlayerColor(playerRef);
         Resource resource = parseResource(resourceStr);
-        Map<Resource, Integer> counts = world.playerResources.get(playerName);
+        Map<Resource, Integer> counts = world.playerResources.get(color);
         int actual = counts != null ? counts.getOrDefault(resource, 0) : 0;
         assertEquals(expectedCount, actual);
     }
 
     private void collectResourcesFromTile(Tile tile) {
-        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent("Alice", k -> new java.util.HashMap<>());
+        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(PlayerColor.ROSE, k -> new java.util.HashMap<>());
         for (TileCell cell : new TileCell[]{tile.getCellA(), tile.getCellB()}) {
             if (cell.getResource() != null) {
                 counts.put(cell.getResource(), counts.getOrDefault(cell.getResource(), 0) + 1);
@@ -135,7 +137,7 @@ public class ResourceSteps {
         }
     }
 
-    private void addPlayerResource(String player, Resource resource, int count) {
+    private void addPlayerResource(PlayerColor player, Resource resource, int count) {
         Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(player, k -> new java.util.HashMap<>());
         counts.put(resource, counts.getOrDefault(resource, 0) + count);
     }
