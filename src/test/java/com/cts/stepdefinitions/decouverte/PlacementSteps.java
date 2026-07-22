@@ -51,18 +51,16 @@ public class PlacementSteps {
 
         for (Position occupied : world.kingdom.getOccupiedPositions()) {
             if (target.isAdjacent(occupied)) {
-                Position other = findAdjacentFreePosition(target);
+                Position other = world.kingdom.findAdjacentFreePosition(target);
                 if (other != null) {
                     Tile tile = new Tile(0, new TileCell(terrain, 0), new TileCell(terrain, 0));
-                    if (target.isAdjacent(other)) {
-                        new BoardService().place(world.kingdom, tile, target, other);
-                        return;
-                    }
+                    new BoardService().place(world.kingdom, tile, target, other);
+                    return;
                 }
             }
         }
 
-        Position adj = findAdjacentOccupied(target);
+        Position adj = world.kingdom.findAdjacentOccupied(target);
         if (adj != null) {
             Tile tile = new Tile(0, new TileCell(terrain, 0), new TileCell(Terrain.DESERT, 0));
             TileCell cellAtTarget = (target.equals(adj)) ? tile.getCellB() : tile.getCellA();
@@ -98,8 +96,8 @@ public class PlacementSteps {
     public void leJoueurPoseUnDomino(String t1, String t2, int x1, int y1, int x2, int y2) {
         Terrain terrainA = parseTerrain(t1);
         Terrain terrainB = parseTerrain(t2);
-        int fireA = volcanoFireCount(terrainA, terrainB);
-        int fireB = volcanoFireCount(terrainB, terrainA);
+        int fireA = BoardService.getFireCountForVolcano(terrainA, terrainB);
+        int fireB = BoardService.getFireCountForVolcano(terrainB, terrainA);
         currentTile = new Tile(0, new TileCell(terrainA, fireA), new TileCell(terrainB, fireB));
         Position posA = new Position(x1, y1);
         Position posB = new Position(x2, y2);
@@ -263,16 +261,6 @@ public class PlacementSteps {
         leJetonFeuNePeutPasEtrePlace();
     }
 
-    private int volcanoFireCount(Terrain cell, Terrain other) {
-        if (cell != Terrain.VOLCAN) return 0;
-        return switch (other) {
-            case LAC -> 1;
-            case JUNGLE -> 2;
-            case DESERT -> 3;
-            default -> 0;
-        };
-    }
-
     private Terrain parseTerrain(String s) {
         return switch (s.toLowerCase()) {
             case "volcan" -> Terrain.VOLCAN;
@@ -286,27 +274,4 @@ public class PlacementSteps {
         };
     }
 
-    private Position findAdjacentFreePosition(Position target) {
-        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
-        for (int[] d : dirs) {
-            Position p = new Position(target.x() + d[0], target.y() + d[1]);
-            if (p.x() >= 0 && p.x() < Kingdom.SIZE && p.y() >= 0 && p.y() < Kingdom.SIZE
-                && !world.kingdom.isOccupied(p)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    private Position findAdjacentOccupied(Position target) {
-        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
-        for (int[] d : dirs) {
-            Position p = new Position(target.x() + d[0], target.y() + d[1]);
-            if (p.x() >= 0 && p.x() < Kingdom.SIZE && p.y() >= 0 && p.y() < Kingdom.SIZE
-                && world.kingdom.isOccupied(p)) {
-                return p;
-            }
-        }
-        return null;
-    }
 }

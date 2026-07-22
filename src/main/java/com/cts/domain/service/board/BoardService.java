@@ -87,6 +87,16 @@ public class BoardService {
 
     // -- Fire tokens (volcan) --
 
+    public static int getFireCountForVolcano(Terrain cell, Terrain other) {
+        if (cell != Terrain.VOLCAN) return 0;
+        return switch (other) {
+            case LAC -> 1;
+            case JUNGLE -> 2;
+            case DESERT -> 3;
+            default -> 0;
+        };
+    }
+
     public List<FireToken> collectFireTokens(Tile tile) {
         List<FireToken> tokens = new ArrayList<>();
         addIfVolcano(tile.getCellA(), tokens);

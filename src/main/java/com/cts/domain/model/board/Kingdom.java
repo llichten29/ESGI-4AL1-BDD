@@ -66,6 +66,39 @@ public class Kingdom {
         }
     }
 
+    public void fillTerritory(int count, Terrain terrain) {
+        for (int x = 0; x < SIZE && cellCount < count; x++) {
+            for (int y = 0; y < SIZE && cellCount < count; y++) {
+                Position pos = new Position(x, y);
+                if (!isOccupied(pos)) {
+                    placeCell(pos, new TileCell(terrain, 0));
+                }
+            }
+        }
+    }
+
+    public Position findAdjacentFreePosition(Position target) {
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        for (int[] d : dirs) {
+            Position p = new Position(target.x() + d[0], target.y() + d[1]);
+            if (p.x() >= 0 && p.x() < SIZE && p.y() >= 0 && p.y() < SIZE && !isOccupied(p)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public Position findAdjacentOccupied(Position target) {
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        for (int[] d : dirs) {
+            Position p = new Position(target.x() + d[0], target.y() + d[1]);
+            if (p.x() >= 0 && p.x() < SIZE && p.y() >= 0 && p.y() < SIZE && isOccupied(p)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     public static class FireToken {
         private final int count;
 

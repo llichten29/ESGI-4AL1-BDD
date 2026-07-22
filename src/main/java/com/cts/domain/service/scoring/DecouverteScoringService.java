@@ -79,6 +79,17 @@ public class DecouverteScoringService {
         return new Region(terrain, cellCount, fireCount);
     }
 
+    public ScoreResult calculateWithBonuses(Kingdom kingdom) {
+        ScoreResult base = calculate(kingdom);
+        int empire = new BonusService().calculateEmpireDuFeu(kingdom);
+        int habilis = new BonusService().calculateHomoHabilis(kingdom);
+        return new ScoreResult(
+            base.totalScore() + empire + habilis,
+            base.largestRegionSize(),
+            base.totalFireCount()
+        );
+    }
+
     public int compare(ScoreResult a, ScoreResult b) {
         if (a.totalScore() != b.totalScore()) {
             return Integer.compare(a.totalScore(), b.totalScore());
