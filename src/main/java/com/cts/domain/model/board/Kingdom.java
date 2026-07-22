@@ -3,7 +3,7 @@ package com.cts.domain.model.board;
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +78,7 @@ public class Kingdom {
     }
 
     public Position findAdjacentFreePosition(Position target) {
-        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
-        for (int[] d : dirs) {
+        for (int[] d : Position.CARDINAL_DIRECTIONS) {
             Position p = new Position(target.x() + d[0], target.y() + d[1]);
             if (p.x() >= 0 && p.x() < SIZE && p.y() >= 0 && p.y() < SIZE && !isOccupied(p)) {
                 return p;
@@ -89,8 +88,7 @@ public class Kingdom {
     }
 
     public Position findAdjacentOccupied(Position target) {
-        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
-        for (int[] d : dirs) {
+        for (int[] d : Position.CARDINAL_DIRECTIONS) {
             Position p = new Position(target.x() + d[0], target.y() + d[1]);
             if (p.x() >= 0 && p.x() < SIZE && p.y() >= 0 && p.y() < SIZE && isOccupied(p)) {
                 return p;
@@ -99,19 +97,4 @@ public class Kingdom {
         return null;
     }
 
-    public static class FireToken {
-        private final int count;
-
-        public FireToken(int count) {
-            this.count = count;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public int getRange() {
-            return 4 - count;
-        }
-    }
 }

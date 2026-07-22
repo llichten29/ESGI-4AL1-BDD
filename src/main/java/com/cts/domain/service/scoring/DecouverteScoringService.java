@@ -5,15 +5,13 @@ import com.cts.domain.model.board.Region;
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.scoring.ScoreResult;
 import com.cts.domain.model.tile.Terrain;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class DecouverteScoringService {
-
-    private static final int[][] DIRS = {{-1,0}, {1,0}, {0,-1}, {0,1}};
 
     public ScoreResult calculate(Kingdom kingdom) {
         List<Region> regions = findRegions(kingdom);
@@ -65,7 +63,7 @@ public class DecouverteScoringService {
                 fireCount += kingdom.getFireToken(pos).getCount();
             }
 
-            for (int[] d : DIRS) {
+            for (int[] d : Position.CARDINAL_DIRECTIONS) {
                 Position next = new Position(pos.x() + d[0], pos.y() + d[1]);
                 if (kingdom.isOccupied(next) && !visited.contains(next)) {
                     TileCell nextCell = kingdom.getCell(next);

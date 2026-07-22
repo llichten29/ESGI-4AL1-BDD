@@ -2,11 +2,11 @@ package com.cts.stepdefinitions.decouverte;
 
 import com.cts.domain.exception.InvalidPlacementException;
 import com.cts.domain.model.board.Kingdom;
-import com.cts.domain.model.board.Kingdom.FireToken;
+import com.cts.domain.model.board.FireToken;
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import com.cts.domain.service.board.BoardService;
 import com.cts.stepdefinitions.WorldContext;
 import io.cucumber.java.en.Given;
@@ -108,7 +108,7 @@ public class PlacementSteps {
             lastError = null;
         } catch (InvalidPlacementException e) {
             lastPlacementAccepted = false;
-            lastError = e.getReason();
+            lastError = e.getMessage();
         }
     }
 
@@ -126,7 +126,7 @@ public class PlacementSteps {
             lastError = null;
         } catch (InvalidPlacementException e) {
             lastPlacementAccepted = false;
-            lastError = e.getReason();
+            lastError = e.getMessage();
         }
     }
 
@@ -156,7 +156,7 @@ public class PlacementSteps {
             new BoardService().placeFireToken(world.kingdom, new Position(tx, ty), new Position(vx, vy), new FireToken(value));
             lastPlacementAccepted = true;
             lastError = null;
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidPlacementException e) {
             lastPlacementAccepted = false;
             lastError = e.getMessage();
         }
