@@ -8,7 +8,7 @@ import com.cts.domain.model.player.Player;
 import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

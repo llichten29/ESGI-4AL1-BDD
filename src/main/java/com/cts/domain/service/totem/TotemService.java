@@ -5,7 +5,7 @@ import com.cts.domain.model.common.Position;
 import com.cts.domain.model.common.Resource;
 import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.tile.Terrain;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import java.util.EnumMap;
 import java.util.Map;
 

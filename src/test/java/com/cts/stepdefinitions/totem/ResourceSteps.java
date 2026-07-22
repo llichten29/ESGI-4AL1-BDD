@@ -1,13 +1,13 @@
 package com.cts.stepdefinitions.totem;
 
 import com.cts.domain.model.board.Kingdom;
-import com.cts.domain.model.board.Kingdom.FireToken;
+import com.cts.domain.model.board.FireToken;
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.common.Resource;
 import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import com.cts.domain.service.board.BoardService;
 import com.cts.domain.service.totem.TotemService;
 import com.cts.stepdefinitions.WorldContext;

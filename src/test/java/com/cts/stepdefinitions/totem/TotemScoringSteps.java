@@ -4,7 +4,7 @@ import com.cts.domain.model.common.Position;
 import com.cts.domain.model.common.Resource;
 import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.scoring.ScoreResult;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import com.cts.domain.service.scoring.DecouverteScoringService;
 import com.cts.domain.service.totem.TotemService;
 import com.cts.stepdefinitions.WorldContext;
