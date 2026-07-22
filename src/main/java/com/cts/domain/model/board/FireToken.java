@@ -1,7 +1,6 @@
 package com.cts.domain.model.board;
 
 public class FireToken {
-    private static final int MAX_RANGE = 4;
     private final int count;
 
     public FireToken(int count) {
@@ -13,6 +12,11 @@ public class FireToken {
     }
 
     public int getRange() {
-        return MAX_RANGE - count;
+        return switch (count) {
+            case 1 -> 3;
+            case 2 -> 2;
+            case 3 -> 1;
+            default -> 0;
+        };
     }
 }
