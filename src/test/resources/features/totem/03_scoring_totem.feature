@@ -4,7 +4,7 @@ Feature: Scoring en Mode Totem
     Afin de determiner le vainqueur
 
     Background:
-        Given un joueur "Alice" avec la tuile depart en position (2,2)
+        Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)
 
     # --- Score des ressources ---
 
@@ -23,9 +23,9 @@ Feature: Scoring en Mode Totem
     # --- Score des totems ---
 
     Scenario: Totem Mammouth rapporte des points bonus
-        Given Alice possede 3 ressources Mammouth
-        And Bastien possede 1 ressource Mammouth
-        And le totem Mammouth appartient a Alice
+        Given "Alice (rose)" possede 3 ressources Mammouth
+        And "Bastien (noir)" possede 1 ressource Mammouth
+        And le totem Mammouth appartient a "Alice (rose)"
         When les totems sont reevalues
         And le score de totem est calcule
         Then le score de totem est de 5
@@ -35,21 +35,21 @@ Feature: Scoring en Mode Totem
     Scenario: Score total combine Decouverte ressources et totems
         Given une case steppe en (2,1) sans icone feu contenant une ressource Mammouth
         And une case steppe en (2,0) avec icone feu 1
-        And Alice possede 3 ressources Mammouth
-        And Bastien possede 1 ressource Mammouth
-        And le totem Mammouth appartient a Alice
+        And "Alice (rose)" possede 3 ressources Mammouth
+        And "Bastien (noir)" possede 1 ressource Mammouth
+        And le totem Mammouth appartient a "Alice (rose)"
         When le joueur calcule son score complet en mode Totem
         Then le score total est de 8
 
     Scenario: Egalite de score departagee par les ressources
-        Given le joueur "Alice" a un score de 10 avec 5 ressources
-        And le joueur "Bastien" a un score de 10 avec 3 ressources
+        Given le joueur "Alice (rose)" a un score de 10 avec 5 ressources
+        And le joueur "Bastien (noir)" a un score de 10 avec 3 ressources
         When on compare les deux scores en mode Totem
-        Then Alice est classee devant Bastien
+        Then "Alice (rose)" est classee devant "Bastien (noir)"
 
     Scenario: Comparaison avec totem comme critere de departage
-        Given le joueur "Alice" a un score de 10 avec 5 ressources
-        And le joueur "Bastien" a un score de 10 avec 5 ressources
-        And Alice possede le totem Mammouth
+        Given le joueur "Alice (rose)" a un score de 10 avec 5 ressources
+        And le joueur "Bastien (noir)" a un score de 10 avec 5 ressources
+        And "Alice (rose)" possede le totem Mammouth
         When on compare les deux scores en mode Totem
-        Then Alice est classee devant Bastien
+        Then "Alice (rose)" est classee devant "Bastien (noir)"

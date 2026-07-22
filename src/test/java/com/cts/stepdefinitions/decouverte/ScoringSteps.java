@@ -23,14 +23,14 @@ public class ScoringSteps {
     @When("le joueur calcule son score")
     public void leJoueurCalculeSonScore() {
         DecouverteScoringService service = new DecouverteScoringService();
-        world.lastScore = service.calculate(world.kingdom);
-        lastRegions = service.findRegions(world.kingdom);
+        world.setLastScore(service.calculate(world.getKingdom()));
+        lastRegions = service.findRegions(world.getKingdom());
     }
 
     @Then("le score total est de {int}")
     public void leScoreTotalEstDe(int expected) {
-        assertNotNull(world.lastScore);
-        assertEquals(expected, world.lastScore.totalScore());
+        assertNotNull(world.getLastScore());
+        assertEquals(expected, world.getLastScore().totalScore());
     }
 
     @Then("la region {word} contient {int} cases et {int} feux")
@@ -65,14 +65,14 @@ public class ScoringSteps {
 
     @Then("la plus grande region fait {int} cases")
     public void laPlusGrandeRegionFaitCases(int expected) {
-        assertNotNull(world.lastScore);
-        assertEquals(expected, world.lastScore.largestRegionSize());
+        assertNotNull(world.getLastScore());
+        assertEquals(expected, world.getLastScore().largestRegionSize());
     }
 
     @Then("le nombre total d'icones feu est de {int}")
     public void leNombreTotalDIconesFeuEstDe(int expected) {
-        assertNotNull(world.lastScore);
-        assertEquals(expected, world.lastScore.totalFireCount());
+        assertNotNull(world.getLastScore());
+        assertEquals(expected, world.getLastScore().totalFireCount());
     }
 
     @When("on compare deux scores egaux a {int}")

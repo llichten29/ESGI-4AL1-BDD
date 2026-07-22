@@ -3,7 +3,7 @@ package com.cts.domain.model.board;
 import com.cts.domain.model.common.Position;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,19 +66,35 @@ public class Kingdom {
         }
     }
 
-    public static class FireToken {
-        private final int count;
-
-        public FireToken(int count) {
-            this.count = count;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public int getRange() {
-            return 4 - count;
+    public void fillTerritory(int count, Terrain terrain) {
+        for (int x = 0; x < SIZE && cellCount < count; x++) {
+            for (int y = 0; y < SIZE && cellCount < count; y++) {
+                Position pos = new Position(x, y);
+                if (!isOccupied(pos)) {
+                    placeCell(pos, new TileCell(terrain, 0));
+                }
+            }
         }
     }
+
+    public Position findAdjacentFreePosition(Position target) {
+        for (int[] d : Position.CARDINAL_DIRECTIONS) {
+            Position p = new Position(target.x() + d[0], target.y() + d[1]);
+            if (p.x() >= 0 && p.x() < SIZE && p.y() >= 0 && p.y() < SIZE && !isOccupied(p)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public Position findAdjacentOccupied(Position target) {
+        for (int[] d : Position.CARDINAL_DIRECTIONS) {
+            Position p = new Position(target.x() + d[0], target.y() + d[1]);
+            if (p.x() >= 0 && p.x() < SIZE && p.y() >= 0 && p.y() < SIZE && isOccupied(p)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
 }

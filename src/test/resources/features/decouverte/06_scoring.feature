@@ -4,7 +4,7 @@ Feature: Scoring des territoires
     Afin de determiner le vainqueur
 
     Background:
-        Given un joueur "Alice" avec la tuile depart en position (2,2)
+        Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)
 
     Scenario: Region avec icones feu imprimees
         Given une case steppe en (2,1) avec icone feu 0

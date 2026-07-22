@@ -2,11 +2,12 @@ package com.cts.domain.service.board;
 
 import com.cts.domain.exception.InvalidPlacementException;
 import com.cts.domain.model.board.Kingdom;
-import com.cts.domain.model.board.Kingdom.FireToken;
+import com.cts.domain.model.board.FireToken;
 import com.cts.domain.model.common.Position;
+import com.cts.domain.model.common.Resource;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
-import com.cts.domain.model.tile.Tile.TileCell;
+import com.cts.domain.model.tile.TileCell;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,32 +16,32 @@ public class BoardService {
     // -- Placement (domino) --
 
     public boolean canPlace(Kingdom kingdom, Tile tile, Position posA, Position posB) {
-        try {
-            validate(kingdom, tile, posA, posB);
-            return true;
-        } catch (InvalidPlacementException e) {
-            return false;
-        }
+        return collectErrors(kingdom, tile, posA, posB).isEmpty();
     }
 
     public void place(Kingdom kingdom, Tile tile, Position posA, Position posB) {
-        validate(kingdom, tile, posA, posB);
+        List<String> errors = collectErrors(kingdom, tile, posA, posB);
+        if (!errors.isEmpty()) {
+            throw new InvalidPlacementException(errors.get(0));
+        }
         kingdom.placeTile(tile, posA, posB);
     }
 
-    public void validate(Kingdom kingdom, Tile tile, Position posA, Position posB) {
+    private List<String> collectErrors(Kingdom kingdom, Tile tile, Position posA, Position posB) {
+        List<String> errors = new ArrayList<>();
         if (!withinGrid(posA) || !withinGrid(posB)) {
-            throw new InvalidPlacementException("hors de la grille 5x5");
+            errors.add("hors de la grille 5x5");
         }
         if (!posA.isAdjacent(posB)) {
-            throw new InvalidPlacementException("les deux cases du domino ne sont pas adjacentes");
+            errors.add("les deux cases du domino ne sont pas adjacentes");
         }
         if (kingdom.isOccupied(posA) || kingdom.isOccupied(posB)) {
-            throw new InvalidPlacementException("case deja occupee");
+            errors.add("case deja occupee");
         }
         if (!hasAdjacentMatch(kingdom, tile, posA, posB)) {
-            throw new InvalidPlacementException("aucun terrain adjacent compatible");
+            errors.add("aucun terrain adjacent compatible");
         }
+        return errors;
     }
 
     public List<Position[]> findValidPlacements(Kingdom kingdom, Tile tile) {
@@ -56,8 +57,7 @@ public class BoardService {
     }
 
     private void addValidPlacementsFrom(List<Position[]> results, Kingdom kingdom, Tile tile, Position a) {
-        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
-        for (int[] d : dirs) {
+        for (int[] d : Position.CARDINAL_DIRECTIONS) {
             Position b = new Position(a.x() + d[0], a.y() + d[1]);
             if (withinGrid(b) && canPlace(kingdom, tile, a, b)) {
                 results.add(new Position[]{a, b});
@@ -86,6 +86,16 @@ public class BoardService {
     }
 
     // -- Fire tokens (volcan) --
+
+    public static int getFireCountForVolcano(Terrain cell, Terrain other) {
+        if (cell != Terrain.VOLCAN) return 0;
+        return switch (other) {
+            case LAC -> 1;
+            case JUNGLE -> 2;
+            case DESERT -> 3;
+            default -> 0;
+        };
+    }
 
     public List<FireToken> collectFireTokens(Tile tile) {
         List<FireToken> tokens = new ArrayList<>();
@@ -126,8 +136,18 @@ public class BoardService {
 
     public void placeFireToken(Kingdom kingdom, Position target, Position volcanoPos, FireToken token) {
         if (!canPlaceFireToken(kingdom, target, volcanoPos, token)) {
-            throw new IllegalArgumentException("placement de jeton feu invalide");
+            throw new InvalidPlacementException("placement de jeton feu invalide");
         }
         kingdom.placeFireToken(target, token);
+    }
+
+    public Resource placeFireTokenAndDestroyResource(Kingdom kingdom, Position target, Position volcanoPos, FireToken token) {
+        placeFireToken(kingdom, target, volcanoPos, token);
+        TileCell cell = kingdom.getCell(target);
+        Resource removed = cell.getResource();
+        if (removed != null) {
+            kingdom.placeCell(target, new TileCell(cell.getTerrain(), cell.getFireCount(), null));
+        }
+        return removed;
     }
 }
