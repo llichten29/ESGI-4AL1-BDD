@@ -1,6 +1,6 @@
 # Kingdomino Origins — BDD (ESGI 4AL1)
 
-Application de simulation du jeu **Kingdomino Origins** (Mode Découverte) spécifiée par scénarios Gherkin (Cucumber Java).
+Application de simulation du jeu **Kingdomino Origins** (Modes Découverte et Totem) spécifiée par scénarios Gherkin (Cucumber Java).
 
 **Stack :** Java 17, Maven, Cucumber 7, JUnit 5
 
@@ -29,4 +29,8 @@ src/
 
 ## Périmètre
 
-Mode Découverte uniquement — voir [docs/PERIMETRE.md](docs/PERIMETRE.md).
+**Modes implémentés :**
+- **Découverte** — [docs/PERIMETRE_DECOUVERTE.md](docs/PERIMETRE_DECOUVERTE.md) (placement, volcans, scoring)
+- **Totem** — [docs/PERIMETRE_TOTEM.md](docs/PERIMETRE_TOTEM.md) (ressources, totems, scoring Totem)
+
+**Hors périmètre :** Mode Tribu, variante 2 joueurs

@@ -1,32 +1,4 @@
-<<<<<<< Updated upstream
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
-
-School project (ESGI 4AL1 — Behaviour Driven Development): design and test a board game through BDD scenarios. The full assignment, grading rubric, and constraints are in [sujet.md](sujet.md) (in French) — read it before making design decisions.
-
-The group must pick **one** of four games (Kingdomino, Cascadia, Splendor, Takenoko), implement its rules as an application, and specify its behavior with Gherkin scenarios (Cucumber, Behave, SpecFlow, Jest-Cucumber, or equivalent — the stack is the group's choice and has not been chosen yet).
-
-**Current state:** no code exists yet. Only the subject documents are present. Once a game and tech stack are chosen, update this file with build/test commands and the architecture.
-
-## Hard Requirements (from the assignment)
-
-These are graded constraints, not suggestions:
-
-- **Scenarios are the core deliverable.** All Gherkin scenarios must be written by the group (none are provided). Scenario quality and their fidelity to the game rules is the largest grading criterion (6/20).
-- **No skipped scenarios.** Every step must be implemented; every scenario must actually execute.
-- **Strict domain/steps separation.** Step definitions orchestrate; the domain model decides. Game logic must never live in step files. This separation is presented at the defense.
-- **Deterministic randomness.** Any draw (tiles, cards, dice) must be seedable so scenarios are reproducible.
-- **Coverage breadth.** Cover nominal, alternative, edge, and error cases (invalid placement, exhausted resources, ties, trigger chains).
-- **No UI needed.** The app only needs to execute the scenarios, not be playable interactively.
-
-## Defense Constraints Affecting Design
-
-The 20-minute defense includes a live demo where one test is deliberately made to fail to show the rule→behavior link, and a live exercise writing/modifying a scenario on the spot. Keep the scenario suite fast to run and the Gherkin readable by a non-developer.
-=======
-# CLAUDE.md — Projet Kingdomino (BDD)
+﻿# CLAUDE.md — Projet Kingdomino (BDD)
 
 ---
 
@@ -94,9 +66,8 @@ Cela permet de tracer le périmètre et d'éviter le scope creep.
 
 Si une règle de Kingdomino est ambiguë, contradictoire, ou si une information nécessaire à l'implémentation manque : **demander à l'utilisateur** avant d'inventer ou de supposer.
 
-### 10 — Tous sénario devra être validé par l'utilsateur
+### 10 — Tout scénario devra être validé par l'utilisateur
 
-### 11 - Regle de git
+### 11 — Règle de git
 
-repecte les bonnes partiques de git flow. Créer des branches develop feature (pour chaque branche)
->>>>>>> Stashed changes
+Respecte les bonnes pratiques de git flow. Créer des branches develop et feature pour chaque fonctionnalité.
