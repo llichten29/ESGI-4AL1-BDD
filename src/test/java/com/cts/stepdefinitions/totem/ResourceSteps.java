@@ -75,7 +75,11 @@ public class ResourceSteps {
         Tile tile = world.currentTile;
         assertNotNull(tile, "Aucun domino prepare");
         new BoardService().place(world.kingdom, tile, new Position(x1, y1), new Position(x2, y2));
-        collectResourcesFromTile(tile);
+        Map<Resource, Integer> collected = resourceService.countResources(tile);
+        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(PlayerColor.ROSE, k -> new java.util.HashMap<>());
+        for (Map.Entry<Resource, Integer> entry : collected.entrySet()) {
+            counts.merge(entry.getKey(), entry.getValue(), Integer::sum);
+        }
     }
 
     @When("le joueur projette le jeton feu de valeur {int} sur la case \\({int},{int}\\)")
@@ -126,15 +130,6 @@ public class ResourceSteps {
         Map<Resource, Integer> counts = world.playerResources.get(color);
         int actual = counts != null ? counts.getOrDefault(resource, 0) : 0;
         assertEquals(expectedCount, actual);
-    }
-
-    private void collectResourcesFromTile(Tile tile) {
-        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(PlayerColor.ROSE, k -> new java.util.HashMap<>());
-        for (TileCell cell : new TileCell[]{tile.getCellA(), tile.getCellB()}) {
-            if (cell.getResource() != null) {
-                counts.put(cell.getResource(), counts.getOrDefault(cell.getResource(), 0) + 1);
-            }
-        }
     }
 
     private void addPlayerResource(PlayerColor player, Resource resource, int count) {

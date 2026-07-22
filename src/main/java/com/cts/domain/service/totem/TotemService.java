@@ -5,8 +5,10 @@ import com.cts.domain.model.common.Position;
 import com.cts.domain.model.common.Resource;
 import com.cts.domain.model.player.PlayerColor;
 import com.cts.domain.model.tile.Terrain;
+import com.cts.domain.model.tile.Tile;
 import com.cts.domain.model.tile.TileCell;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class TotemService {
@@ -76,6 +78,16 @@ public class TotemService {
             return resource;
         }
         return null;
+    }
+
+    public Map<Resource, Integer> countResources(Tile tile) {
+        Map<Resource, Integer> result = new EnumMap<>(Resource.class);
+        for (TileCell cell : new TileCell[]{tile.getCellA(), tile.getCellB()}) {
+            if (cell.getResource() != null) {
+                result.merge(cell.getResource(), 1, Integer::sum);
+            }
+        }
+        return result;
     }
 
     public Resource destroyResource(Kingdom kingdom, Position pos) {
