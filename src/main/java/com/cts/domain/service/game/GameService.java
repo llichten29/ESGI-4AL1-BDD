@@ -164,4 +164,23 @@ public class GameService {
         return roundManager.getTurnNumber();
     }
 
+    public void autoSelectTiles() {
+        List<Tile> available = getCurrentDraft().getUnchosenTiles();
+        int idx = 0;
+        for (Player p : players) {
+            if (!p.hasChosen() && idx < available.size()) {
+                Tile tile = available.get(idx);
+                selectTileByNumber(p, tile.getNumber());
+                idx++;
+            }
+        }
+    }
+
+    public void playUntilEnd() {
+        while (canAdvance()) {
+            autoSelectTiles();
+            advanceRound();
+        }
+    }
+
 }

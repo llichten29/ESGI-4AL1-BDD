@@ -4,6 +4,7 @@ import com.cts.domain.exception.InvalidPlacementException;
 import com.cts.domain.model.board.Kingdom;
 import com.cts.domain.model.board.FireToken;
 import com.cts.domain.model.common.Position;
+import com.cts.domain.model.common.Resource;
 import com.cts.domain.model.tile.Terrain;
 import com.cts.domain.model.tile.Tile;
 import com.cts.domain.model.tile.TileCell;
@@ -138,5 +139,15 @@ public class BoardService {
             throw new InvalidPlacementException("placement de jeton feu invalide");
         }
         kingdom.placeFireToken(target, token);
+    }
+
+    public Resource placeFireTokenAndDestroyResource(Kingdom kingdom, Position target, Position volcanoPos, FireToken token) {
+        placeFireToken(kingdom, target, volcanoPos, token);
+        TileCell cell = kingdom.getCell(target);
+        Resource removed = cell.getResource();
+        if (removed != null) {
+            kingdom.placeCell(target, new TileCell(cell.getTerrain(), cell.getFireCount(), null));
+        }
+        return removed;
     }
 }
