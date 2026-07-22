@@ -17,11 +17,11 @@ public class BonusSteps {
 
     @Given("un territoire de {int} cases")
     public void unTerritoireDeCases(int count) {
-        world.kingdom.fillTerritory(count, Terrain.STEPPE);
+        world.getKingdom().fillTerritory(count, Terrain.STEPPE);
     }
 
     @When("les bonus optionnels sont calcules")
     public void lesBonusOptionnelsSontCalcules() {
-        world.lastScore = scoringService.calculateWithBonuses(world.kingdom);
+        world.setLastScore(scoringService.calculateWithBonuses(world.getKingdom()));
     }
 }

@@ -28,8 +28,8 @@ public class TotemScoringSteps {
     @Given("^le joueur \"([^\"]+)\" a un score de (\\d+) avec (\\d+) ressources?$")
     public void leJoueurAScoreAvecRessources(String playerRef, int score, int resourceCount) {
         PlayerColor color = WorldContext.parsePlayerColor(playerRef);
-        world.resourceCounts.put(color, resourceCount);
-        world.lastScore = new ScoreResult(score, 0, 0);
+        world.getResourceCounts().put(color, resourceCount);
+        world.setLastScore(new ScoreResult(score, 0, 0));
         if (WorldContext.extractPlayerName(playerRef).equals("Alice")) {
             aliceScore = new ScoreResult(score, 0, 0);
         } else {
@@ -39,86 +39,86 @@ public class TotemScoringSteps {
 
     @When("le joueur calcule son score en mode Totem")
     public void leJoueurCalculeSonScoreModeTotem() {
-        ScoreResult base = decouverteService.calculate(world.kingdom);
+        ScoreResult base = decouverteService.calculate(world.getKingdom());
         int resourcePoints = countResourcesOnCells();
-        world.lastScore = new ScoreResult(
-            base.totalScore() + resourcePoints, base.largestRegionSize(), base.totalFireCount());
+        world.setLastScore(new ScoreResult(
+            base.totalScore() + resourcePoints, base.largestRegionSize(), base.totalFireCount()));
     }
 
     @When("le score de totem est calcule")
     public void leScoreDeTotemEstCalcule() {
         int total = 0;
-        for (Map.Entry<Resource, PlayerColor> entry : world.totemOwners.entrySet()) {
+        for (Map.Entry<Resource, PlayerColor> entry : world.getTotemOwners().entrySet()) {
             if (PlayerColor.ROSE == entry.getValue()) {
                 total += totemService.getTotemPoints();
             }
         }
-        world.totemTileScore = total;
+        world.setTotemTileScore(total);
     }
 
     @When("le joueur calcule son score complet en mode Totem")
     public void leJoueurCalculeSonScoreComplet() {
-        ScoreResult base = decouverteService.calculate(world.kingdom);
+        ScoreResult base = decouverteService.calculate(world.getKingdom());
         int resourcePoints = countResourcesOnCells();
         int totemPoints = 0;
-        for (Map.Entry<Resource, PlayerColor> entry : world.totemOwners.entrySet()) {
+        for (Map.Entry<Resource, PlayerColor> entry : world.getTotemOwners().entrySet()) {
             if (PlayerColor.ROSE == entry.getValue()) {
                 totemPoints += totemService.getTotemPoints();
             }
         }
-        world.lastScore = new ScoreResult(
+        world.setLastScore(new ScoreResult(
             base.totalScore() + resourcePoints + totemPoints,
             base.largestRegionSize(),
-            base.totalFireCount());
+            base.totalFireCount()));
     }
 
     @When("on compare les deux scores en mode Totem")
     public void onCompareLesDeuxScoresModeTotem() {
-        if (aliceScore == null) aliceScore = world.lastScore;
-        if (bobScore == null) bobScore = world.otherScore;
+        if (aliceScore == null) aliceScore = world.getLastScore();
+        if (bobScore == null) bobScore = world.getOtherScore();
 
         int aliceTotal = aliceScore.totalScore();
         int bobTotal = bobScore.totalScore();
 
         if (aliceTotal != bobTotal) {
-            world.winner = aliceTotal > bobTotal ? PlayerColor.ROSE : PlayerColor.NOIR;
+            world.setWinner(aliceTotal > bobTotal ? PlayerColor.ROSE : PlayerColor.NOIR);
             return;
         }
 
-        int aliceResource = world.resourceCounts.getOrDefault(PlayerColor.ROSE, 0);
-        int bobResource = world.resourceCounts.getOrDefault(PlayerColor.NOIR, 0);
+        int aliceResource = world.getResourceCounts().getOrDefault(PlayerColor.ROSE, 0);
+        int bobResource = world.getResourceCounts().getOrDefault(PlayerColor.NOIR, 0);
 
         if (aliceResource != bobResource) {
-            world.winner = aliceResource > bobResource ? PlayerColor.ROSE : PlayerColor.NOIR;
+            world.setWinner(aliceResource > bobResource ? PlayerColor.ROSE : PlayerColor.NOIR);
             return;
         }
 
-        boolean aliceHasTotem = world.totemOwners.values().stream().anyMatch(PlayerColor.ROSE::equals);
-        boolean bobHasTotem = world.totemOwners.values().stream().anyMatch(PlayerColor.NOIR::equals);
+        boolean aliceHasTotem = world.getTotemOwners().values().stream().anyMatch(PlayerColor.ROSE::equals);
+        boolean bobHasTotem = world.getTotemOwners().values().stream().anyMatch(PlayerColor.NOIR::equals);
 
         if (aliceHasTotem && !bobHasTotem) {
-            world.winner = PlayerColor.ROSE;
+            world.setWinner(PlayerColor.ROSE);
         } else if (bobHasTotem && !aliceHasTotem) {
-            world.winner = PlayerColor.NOIR;
+            world.setWinner(PlayerColor.NOIR);
         } else {
-            world.winner = null;
+            world.setWinner(null);
         }
     }
 
     @Then("le score de totem est de {int}")
     public void leScoreDeTotemEstDe(int expected) {
-        assertEquals(expected, world.totemTileScore);
+        assertEquals(expected, world.getTotemTileScore());
     }
 
     @Then("{string} est classee devant {string}")
     public void joueurEstClasseeDevant(String first, String second) {
-        assertEquals(WorldContext.parsePlayerColor(first), world.winner);
+        assertEquals(WorldContext.parsePlayerColor(first), world.getWinner());
     }
 
     private int countResourcesOnCells() {
         int count = 0;
-        for (Position pos : world.kingdom.getOccupiedPositions()) {
-            TileCell cell = world.kingdom.getCell(pos);
+        for (Position pos : world.getKingdom().getOccupiedPositions()) {
+            TileCell cell = world.getKingdom().getCell(pos);
             if (cell.getResource() != null) {
                 count++;
             }

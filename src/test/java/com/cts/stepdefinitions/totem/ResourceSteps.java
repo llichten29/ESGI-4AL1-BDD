@@ -28,7 +28,7 @@ public class ResourceSteps {
     @Given("une case {word} en \\({int},{int}\\) sans icone feu")
     public void uneCaseSansIconeFeu(String terrainStr, int x, int y) {
         Terrain terrain = parseTerrain(terrainStr);
-        world.kingdom.placeCell(new Position(x, y), new TileCell(terrain, 0));
+        world.getKingdom().placeCell(new Position(x, y), new TileCell(terrain, 0));
     }
 
     @Given("une case {word} en \\({int},{int}\\) contenant une ressource {word}")
@@ -36,7 +36,7 @@ public class ResourceSteps {
         Terrain terrain = parseTerrain(terrainStr);
         Resource resource = parseResource(resourceStr);
         Position pos = new Position(x, y);
-        world.kingdom.placeCell(pos, new TileCell(terrain, 0, resource));
+        world.getKingdom().placeCell(pos, new TileCell(terrain, 0, resource));
         addPlayerResource(PlayerColor.ROSE, resource, 1);
     }
 
@@ -52,7 +52,7 @@ public class ResourceSteps {
         Terrain terrainB = parseTerrain(t2);
         TileCell cellA = new TileCell(terrainA, 0, resource);
         TileCell cellB = new TileCell(terrainB, 0, null);
-        world.currentTile = new Tile(0, cellA, cellB);
+        world.setCurrentTile(new Tile(0, cellA, cellB));
     }
 
     @Given("le joueur recoit un domino {word}-{word} avec {int} ressources {word}")
@@ -62,21 +62,21 @@ public class ResourceSteps {
         Terrain terrainB = parseTerrain(t2);
         TileCell cellA = new TileCell(terrainA, 0, count >= 1 ? resource : null);
         TileCell cellB = new TileCell(terrainB, 0, count >= 2 ? resource : null);
-        world.currentTile = new Tile(0, cellA, cellB);
+        world.setCurrentTile(new Tile(0, cellA, cellB));
     }
 
     @When("la ressource est placee sur la case \\({int},{int}\\)")
     public void laRessourceEstPlaceeSurLaCase(int x, int y) {
-        resourceService.placeResourceOnCell(world.kingdom, new Position(x, y));
+        resourceService.placeResourceOnCell(world.getKingdom(), new Position(x, y));
     }
 
     @When("le joueur pose le domino en \\({int},{int}\\) et \\({int},{int}\\)")
     public void leJoueurPoseLeDomino(int x1, int y1, int x2, int y2) {
-        Tile tile = world.currentTile;
+        Tile tile = world.getCurrentTile();
         assertNotNull(tile, "Aucun domino prepare");
-        new BoardService().place(world.kingdom, tile, new Position(x1, y1), new Position(x2, y2));
+        new BoardService().place(world.getKingdom(), tile, new Position(x1, y1), new Position(x2, y2));
         Map<Resource, Integer> collected = resourceService.countResources(tile);
-        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(PlayerColor.ROSE, k -> new java.util.HashMap<>());
+        Map<Resource, Integer> counts = world.getPlayerResources().computeIfAbsent(PlayerColor.ROSE, k -> new java.util.HashMap<>());
         for (Map.Entry<Resource, Integer> entry : collected.entrySet()) {
             counts.merge(entry.getKey(), entry.getValue(), Integer::sum);
         }
@@ -88,11 +88,11 @@ public class ResourceSteps {
         Position volcanoPos = findVolcano();
         assertNotNull(volcanoPos, "Aucun volcan dans le royaume");
 
-        new BoardService().placeFireToken(world.kingdom, target, volcanoPos, new FireToken(value));
+        new BoardService().placeFireToken(world.getKingdom(), target, volcanoPos, new FireToken(value));
 
-        Resource destroyed = resourceService.destroyResource(world.kingdom, target);
+        Resource destroyed = resourceService.destroyResource(world.getKingdom(), target);
         if (destroyed != null) {
-            Map<Resource, Integer> counts = world.playerResources.get(PlayerColor.ROSE);
+            Map<Resource, Integer> counts = world.getPlayerResources().get(PlayerColor.ROSE);
             if (counts != null) {
                 counts.put(destroyed, counts.getOrDefault(destroyed, 0) - 1);
             }
@@ -101,7 +101,7 @@ public class ResourceSteps {
 
     @Then("la case \\({int},{int}\\) contient une ressource {word}")
     public void laCaseContientUneRessource(int x, int y, String resourceStr) {
-        TileCell cell = world.kingdom.getCell(new Position(x, y));
+        TileCell cell = world.getKingdom().getCell(new Position(x, y));
         assertNotNull(cell);
         assertNotNull(cell.getResource());
         assertEquals(parseResource(resourceStr), cell.getResource());
@@ -109,7 +109,7 @@ public class ResourceSteps {
 
     @Then("la case \\({int},{int}\\) ne contient aucune ressource")
     public void laCaseNeContientAucuneRessource(int x, int y) {
-        TileCell cell = world.kingdom.getCell(new Position(x, y));
+        TileCell cell = world.getKingdom().getCell(new Position(x, y));
         assertNotNull(cell);
         assertNull(cell.getResource());
     }
@@ -127,19 +127,19 @@ public class ResourceSteps {
     private void assertPlayerResource(String playerRef, int expectedCount, String resourceStr) {
         PlayerColor color = WorldContext.parsePlayerColor(playerRef);
         Resource resource = parseResource(resourceStr);
-        Map<Resource, Integer> counts = world.playerResources.get(color);
+        Map<Resource, Integer> counts = world.getPlayerResources().get(color);
         int actual = counts != null ? counts.getOrDefault(resource, 0) : 0;
         assertEquals(expectedCount, actual);
     }
 
     private void addPlayerResource(PlayerColor player, Resource resource, int count) {
-        Map<Resource, Integer> counts = world.playerResources.computeIfAbsent(player, k -> new java.util.HashMap<>());
+        Map<Resource, Integer> counts = world.getPlayerResources().computeIfAbsent(player, k -> new java.util.HashMap<>());
         counts.put(resource, counts.getOrDefault(resource, 0) + count);
     }
 
     private Position findVolcano() {
-        for (Position pos : world.kingdom.getOccupiedPositions()) {
-            TileCell cell = world.kingdom.getCell(pos);
+        for (Position pos : world.getKingdom().getOccupiedPositions()) {
+            TileCell cell = world.getKingdom().getCell(pos);
             if (cell.getTerrain() == Terrain.VOLCAN) {
                 return pos;
             }
