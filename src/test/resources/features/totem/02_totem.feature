@@ -6,61 +6,59 @@ Feature: Attribution des tuiles Totem
     Background:
         Given une partie en mode Totem avec 4 joueurs et seed 42
 
-    # --- Majorite simple ---
+    Rule: La majorite stricte sur un type de ressource donne la tuile Totem
 
-    Scenario: Joueur majoritaire recupere le totem
-        Given "Alice (rose)" possede 3 ressources Mammouth
-        And "Bastien (noir)" possede 1 ressource Mammouth
-        When les totems sont reevalues
-        Then le totem Mammouth revient a "Alice (rose)"
+        Scenario: Joueur majoritaire recupere le totem
+            Given "Alice (rose)" possede 3 ressources Mammouth
+            And "Bastien (noir)" possede 1 ressource Mammouth
+            When les totems sont reevalues
+            Then le totem Mammouth revient a "Alice (rose)"
 
-    Scenario: Quatre totems attribues a quatre joueurs differents
-        Given "Alice (rose)" possede 3 ressources Mammouth
-        And "Bastien (noir)" possede 2 ressources Poisson
-        And "Camille (vert)" possede 1 ressource Champignon
-        And "David (bleu)" possede 4 ressources Silex
-        When les totems sont reevalues
-        Then le totem Mammouth revient a "Alice (rose)"
-        And le totem Poisson revient a "Bastien (noir)"
-        And le totem Champignon revient a "Camille (vert)"
-        And le totem Silex revient a "David (bleu)"
+        Scenario: Quatre totems attribues a quatre joueurs differents
+            Given "Alice (rose)" possede 3 ressources Mammouth
+            And "Bastien (noir)" possede 2 ressources Poisson
+            And "Camille (vert)" possede 1 ressource Champignon
+            And "David (bleu)" possede 4 ressources Silex
+            When les totems sont reevalues
+            Then le totem Mammouth revient a "Alice (rose)"
+            And le totem Poisson revient a "Bastien (noir)"
+            And le totem Champignon revient a "Camille (vert)"
+            And le totem Silex revient a "David (bleu)"
 
-    Scenario: Un joueur cumule plusieurs totems
-        Given "Alice (rose)" possede 3 ressources Mammouth
-        And "Alice (rose)" possede 2 ressources Poisson
-        And "Bastien (noir)" possede 1 ressource Champignon
-        When les totems sont reevalues
-        Then le totem Mammouth revient a "Alice (rose)"
-        And le totem Poisson revient a "Alice (rose)"
+        Scenario: Un joueur cumule plusieurs totems
+            Given "Alice (rose)" possede 3 ressources Mammouth
+            And "Alice (rose)" possede 2 ressources Poisson
+            And "Bastien (noir)" possede 1 ressource Champignon
+            When les totems sont reevalues
+            Then le totem Mammouth revient a "Alice (rose)"
+            And le totem Poisson revient a "Alice (rose)"
 
-    # --- Egalite ---
+    Rule: Le totem change de main quand la majorite change
 
-    Scenario: Egalite de majorite avec un proprietaire actuel
-        Given "Alice (rose)" possede 2 ressources Mammouth
-        And "Bastien (noir)" possede 2 ressources Mammouth
-        And le totem Mammouth appartient a "Alice (rose)"
-        When les totems sont reevalues
-        Then le totem Mammouth reste chez "Alice (rose)"
+        Scenario: Un joueur depasse le leader et recupere le totem
+            Given "Alice (rose)" possede 2 ressources Mammouth
+            And le totem Mammouth appartient a "Alice (rose)"
+            And "Bastien (noir)" possede 3 ressources Mammouth
+            When les totems sont reevalues
+            Then le totem Mammouth revient a "Bastien (noir)"
 
-    Scenario: Egalite de majorite sans proprietaire
-        Given "Alice (rose)" possede 2 ressources Mammouth
-        And "Bastien (noir)" possede 2 ressources Mammouth
-        And "Camille (vert)" possede 1 ressource Mammouth
-        When les totems sont reevalues
-        Then le totem Mammouth n est attribue a personne
+    Rule: En cas d'egalite, le totem reste au proprietaire actuel ou demeure libre
 
-    # --- Changement de proprietaire ---
+        Scenario: Egalite de majorite avec un proprietaire actuel
+            Given "Alice (rose)" possede 2 ressources Mammouth
+            And "Bastien (noir)" possede 2 ressources Mammouth
+            And le totem Mammouth appartient a "Alice (rose)"
+            When les totems sont reevalues
+            Then le totem Mammouth reste chez "Alice (rose)"
 
-    Scenario: Un joueur depasse le leader et recupere le totem
-        Given "Alice (rose)" possede 2 ressources Mammouth
-        And le totem Mammouth appartient a "Alice (rose)"
-        And "Bastien (noir)" possede 3 ressources Mammouth
-        When les totems sont reevalues
-        Then le totem Mammouth revient a "Bastien (noir)"
+        Scenario: Egalite de majorite sans proprietaire
+            Given "Alice (rose)" possede 2 ressources Mammouth
+            And "Bastien (noir)" possede 2 ressources Mammouth
+            And "Camille (vert)" possede 1 ressource Mammouth
+            When les totems sont reevalues
+            Then le totem Mammouth n est attribue a personne
 
-    # --- Aucune ressource ---
-
-    Scenario: Aucune ressource d un type le totem reste libre
-        Given aucun joueur ne possede de ressource Silex
-        When les totems sont reevalues
-        Then le totem Silex n est attribue a personne
+        Scenario: Aucune ressource d un type le totem reste libre
+            Given aucun joueur ne possede de ressource Silex
+            When les totems sont reevalues
+            Then le totem Silex n est attribue a personne
