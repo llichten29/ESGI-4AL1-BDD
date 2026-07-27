@@ -15,12 +15,13 @@
 - **Dernier tour** : pose uniquement (pas de sélection)
 - **3 joueurs** : un domino est défaussé par draft
 - **4 joueurs** : dernier joueur prend le domino restant (choix forcé)
+- **Bonus optionnels** :
+  - *Empire du Feu* : +10 points si la hutte (case de départ) est entourée sur ses 4 côtés
+  - *Homo Habilis* : +5 points si le territoire est complet (25 cases, aucun domino défaussé)
 
 ## Règles exclues (hors périmètre)
 
-- Mode Totem (ressources, tuiles Totem)
 - Mode Tribu (Cro-magnons, plateau Grotte)
-- Règles optionnelles : Empire du feu, Homo Habilis
 - Variante 2 joueurs (Néolithique, grille 7×7, 48 dominos)
 - Extensions non officielles
 

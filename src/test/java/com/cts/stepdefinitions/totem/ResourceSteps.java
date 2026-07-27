@@ -112,6 +112,15 @@ public class ResourceSteps {
         assertNull(cell.getResource());
     }
 
+    @Then("la case \\({int},{int}\\) contient la ressource {string}")
+    public void laCaseContientLaRessource(int x, int y, String expected) {
+        if ("aucune".equalsIgnoreCase(expected)) {
+            laCaseNeContientAucuneRessource(x, y);
+        } else {
+            laCaseContientUneRessource(x, y, expected);
+        }
+    }
+
     @Then("{string} possede bien {int} ressource {word}")
     public void joueurPossedeRessourceSingulier(String playerRef, int expectedCount, String resourceStr) {
         assertPlayerResource(playerRef, expectedCount, resourceStr);

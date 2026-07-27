@@ -13,57 +13,33 @@ Feature: Placement des dominos
 
     # --- Premier domino : tous les terrains se connectent au chateau ---
 
-    Scenario: Premier domino jungle sur le chateau
-        When le joueur pose un domino jungle-carriere en (3,2) et (4,2)
+    Scenario Outline: Premier domino <t1> sur le chateau (joker)
+        When le joueur pose un domino <t1>-<t2> en (<x1>,<y1>) et (<x2>,<y2>)
         Then le placement est accepte
 
-    Scenario: Premier domino carriere sur le chateau
-        When le joueur pose un domino carriere-lac en (1,2) et (0,2)
-        Then le placement est accepte
-
-    Scenario: Premier domino lac sur le chateau en horizontal
-        When le joueur pose un domino lac-steppe en (2,3) et (2,4)
-        Then le placement est accepte
-
-    Scenario: Premier domino desert sur le chateau en horizontal
-        When le joueur pose un domino desert-jungle en (2,1) et (2,0)
-        Then le placement est accepte
-
-    Scenario: Premier domino volcan sur le chateau
-        When le joueur pose un domino volcan-steppe en (3,2) et (4,2)
-        Then le placement est accepte
+        Examples:
+            | t1       | t2       | x1 | y1 | x2 | y2 |
+            | jungle   | carriere | 3  | 2  | 4  | 2  |
+            | carriere | lac      | 1  | 2  | 0  | 2  |
+            | lac      | steppe   | 2  | 3  | 2  | 4  |
+            | desert   | jungle   | 2  | 1  | 2  | 0  |
+            | volcan   | steppe   | 3  | 2  | 4  | 2  |
 
     # --- Connexion a un terrain identique : chaque biome ---
 
-    Scenario: Connecter un domino a un terrain identique
-        Given le joueur a deja pose un domino steppe-desert en (2,1) et (2,0)
-        When le joueur pose un domino steppe-steppe en (1,1) et (1,0)
+    Scenario Outline: Connecter un domino <biome> a un terrain <biome> identique
+        Given le joueur a deja pose un domino <pre1>-<pre2> en (<px1>,<py1>) et (<px2>,<py2>)
+        When le joueur pose un domino <biome>-<t2> en (<x1>,<y1>) et (<x2>,<y2>)
         Then le placement est accepte
 
-    Scenario: Connecter un domino jungle a un terrain jungle
-        Given le joueur a deja pose un domino jungle-steppe en (3,2) et (4,2)
-        When le joueur pose un domino jungle-lac en (3,1) et (3,0)
-        Then le placement est accepte
-
-    Scenario: Connecter un domino carriere a un terrain carriere
-        Given le joueur a deja pose un domino carriere-jungle en (1,2) et (0,2)
-        When le joueur pose un domino carriere-lac en (1,1) et (1,0)
-        Then le placement est accepte
-
-    Scenario: Connecter un domino lac a un terrain lac
-        Given le joueur a deja pose un domino lac-jungle en (2,3) et (2,4)
-        When le joueur pose un domino lac-steppe en (1,3) et (1,4)
-        Then le placement est accepte
-
-    Scenario: Connecter un domino desert a un terrain desert
-        Given le joueur a deja pose un domino desert-carriere en (2,1) et (2,0)
-        When le joueur pose un domino desert-steppe en (1,1) et (1,0)
-        Then le placement est accepte
-
-    Scenario: Connecter un domino volcan a un terrain volcan
-        Given le joueur a deja pose un domino volcan-steppe en (2,3) et (2,4)
-        When le joueur pose un domino volcan-jungle en (1,3) et (1,4)
-        Then le placement est accepte
+        Examples:
+            | biome    | pre1     | pre2     | px1 | py1 | px2 | py2 | t2     | x1 | y1 | x2 | y2 |
+            | steppe   | steppe   | desert   | 2   | 1   | 2   | 0   | steppe | 1  | 1  | 1  | 0  |
+            | jungle   | jungle   | steppe   | 3   | 2   | 4   | 2   | lac    | 3  | 1  | 3  | 0  |
+            | carriere | carriere | jungle   | 1   | 2   | 0   | 2   | lac    | 1  | 1  | 1  | 0  |
+            | lac      | lac      | jungle   | 2   | 3   | 2   | 4   | steppe | 1  | 3  | 1  | 4  |
+            | desert   | desert   | carriere | 2   | 1   | 2   | 0   | steppe | 1  | 1  | 1  | 0  |
+            | volcan   | volcan   | steppe   | 2   | 3   | 2   | 4   | jungle | 1  | 3  | 1  | 4  |
 
     Scenario: Choisir entre plusieurs positions valides
         Given le joueur a deja pose un domino steppe-desert en (2,1) et (2,0)

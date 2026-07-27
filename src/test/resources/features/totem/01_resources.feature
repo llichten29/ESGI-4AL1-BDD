@@ -8,40 +8,23 @@ Feature: Ressources en Mode Totem
 
     # --- Attribution des ressources selon le terrain ---
 
-    Scenario: Steppe recoit une ressource Mammouth
-        Given une case steppe en (2,1) sans icone feu
+    Scenario Outline: Une case <terrain> avec <feu> icone(s) feu recoit la ressource <ressource>
+        Given une case <terrain> en (2,1) avec icone feu <feu>
         When la ressource est placee sur la case (2,1)
-        Then la case (2,1) contient une ressource Mammouth
+        Then la case (2,1) contient la ressource "<ressource>"
 
-    Scenario: Lac recoit une ressource Poisson
-        Given une case lac en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) contient une ressource Poisson
+        Examples: Terrains exploitables sans feu
+            | terrain  | feu | ressource  |
+            | steppe   | 0   | Mammouth   |
+            | lac      | 0   | Poisson    |
+            | jungle   | 0   | Champignon |
+            | carriere | 0   | Silex      |
 
-    Scenario: Jungle recoit une ressource Champignon
-        Given une case jungle en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) contient une ressource Champignon
-
-    Scenario: Carriere recoit une ressource Silex
-        Given une case carriere en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) contient une ressource Silex
-
-    Scenario: Desert ne recoit aucune ressource
-        Given une case desert en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) ne contient aucune ressource
-
-    Scenario: Volcan ne recoit aucune ressource
-        Given une case volcan en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) ne contient aucune ressource
-
-    Scenario: Case avec icone feu ne recoit pas de ressource
-        Given une case steppe en (2,1) avec icone feu 1
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) ne contient aucune ressource
+        Examples: Terrains sans ressource ou cases occupees par le feu
+            | terrain  | feu | ressource |
+            | desert   | 0   | aucune    |
+            | volcan   | 0   | aucune    |
+            | steppe   | 1   | aucune    |
 
     # --- Collecte des ressources par le joueur ---
 

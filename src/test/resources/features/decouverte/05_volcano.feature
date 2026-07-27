@@ -8,20 +8,16 @@ Feature: Volcans et jetons Feu
 
     # --- Création des jetons Feu (1ère itération) ---
 
-    Scenario: Volcan 1 cratere donne un jeton feu
+    Scenario Outline: Volcan a <crateres> crateres donne un jeton feu de valeur <valeur>
         Given le joueur a deja pose une steppe en (2,1)
-        When le joueur pose un domino lac-volcan en (2,0) et (1,0)
-        Then le joueur recoit un jeton feu de valeur 1
+        When le joueur pose un domino <t1>-volcan en (<x1>,<y1>) et (<x2>,<y2>)
+        Then le joueur recoit un jeton feu de valeur <valeur>
 
-    Scenario: Volcan 2 crateres donne un jeton feu
-        Given le joueur a deja pose une steppe en (2,1)
-        When le joueur pose un domino jungle-volcan en (3,2) et (3,1)
-        Then le joueur recoit un jeton feu de valeur 2
-
-    Scenario: Volcan 3 crateres donne un jeton feu
-        Given le joueur a deja pose une steppe en (2,1)
-        When le joueur pose un domino desert-volcan en (2,3) et (2,4)
-        Then le joueur recoit un jeton feu de valeur 3
+        Examples:
+            | crateres | t1     | x1 | y1 | x2 | y2 | valeur |
+            | 1        | lac    | 2  | 0  | 1  | 0  | 1      |
+            | 2        | jungle | 3  | 2  | 3  | 1  | 2      |
+            | 3        | desert | 2  | 3  | 2  | 4  | 3      |
 
     Scenario: Domino sans volcan ne donne pas de jeton
         Given le joueur a deja pose une steppe en (2,1)

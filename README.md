@@ -32,5 +32,6 @@ src/
 **Modes implémentés :**
 - **Découverte** — [docs/PERIMETRE_DECOUVERTE.md](docs/PERIMETRE_DECOUVERTE.md) (placement, volcans, scoring)
 - **Totem** — [docs/PERIMETRE_TOTEM.md](docs/PERIMETRE_TOTEM.md) (ressources, totems, scoring Totem)
+- **Bonus optionnels** — Empire du Feu (+10) et Homo Habilis (+5), applicables aux deux modes
 
 **Hors périmètre :** Mode Tribu, variante 2 joueurs
