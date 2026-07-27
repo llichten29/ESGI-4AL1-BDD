@@ -6,68 +6,51 @@ Feature: Ressources en Mode Totem
     Background:
         Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)
 
-    # --- Attribution des ressources selon le terrain ---
+    Rule: Chaque terrain exploitable sans feu recoit sa ressource
 
-    Scenario: Steppe recoit une ressource Mammouth
-        Given une case steppe en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) contient une ressource Mammouth
+        Scenario Outline: Une case <terrain> avec <feu> icone(s) feu recoit la ressource <ressource>
+            Given une case <terrain> en (2,1) avec icone feu <feu>
+            When la ressource est placee sur la case (2,1)
+            Then la case (2,1) contient la ressource "<ressource>"
 
-    Scenario: Lac recoit une ressource Poisson
-        Given une case lac en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) contient une ressource Poisson
+            Examples: Terrains exploitables sans feu
+                | terrain  | feu | ressource  |
+                | steppe   | 0   | Mammouth   |
+                | lac      | 0   | Poisson    |
+                | jungle   | 0   | Champignon |
+                | carriere | 0   | Silex      |
 
-    Scenario: Jungle recoit une ressource Champignon
-        Given une case jungle en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) contient une ressource Champignon
+            Examples: Terrains sans ressource ou cases occupees par le feu
+                | terrain  | feu | ressource |
+                | desert   | 0   | aucune    |
+                | volcan   | 0   | aucune    |
+                | steppe   | 1   | aucune    |
 
-    Scenario: Carriere recoit une ressource Silex
-        Given une case carriere en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) contient une ressource Silex
+    Rule: Le joueur collecte les ressources des dominos qu'il pose
 
-    Scenario: Desert ne recoit aucune ressource
-        Given une case desert en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) ne contient aucune ressource
+        Scenario: Joueur collecte une ressource en posant un domino
+            Given le joueur a deja pose une steppe en (1,2)
+            And le joueur recoit un domino steppe-lac avec une ressource Mammouth
+            When le joueur pose le domino en (2,1) et (2,0)
+            Then "Alice (rose)" possede bien 1 ressource Mammouth
 
-    Scenario: Volcan ne recoit aucune ressource
-        Given une case volcan en (2,1) sans icone feu
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) ne contient aucune ressource
+        Scenario: Joueur collecte deux ressources sur un meme domino
+            Given le joueur a deja pose une steppe en (1,2)
+            And le joueur recoit un domino steppe-steppe avec 2 ressources Mammouth
+            When le joueur pose le domino en (3,2) et (3,1)
+            Then "Alice (rose)" possede bien 2 ressources Mammouth
 
-    Scenario: Case avec icone feu ne recoit pas de ressource
-        Given une case steppe en (2,1) avec icone feu 1
-        When la ressource est placee sur la case (2,1)
-        Then la case (2,1) ne contient aucune ressource
+    Rule: Une projection de feu detruit la ressource de la case ciblee
 
-    # --- Collecte des ressources par le joueur ---
+        Scenario: Feu detruit la ressource sur la case ciblee
+            Given une case steppe en (2,1) contenant une ressource Mammouth
+            And un volcan en (1,2) avec feu 1
+            When le joueur projette le jeton feu de valeur 1 sur la case (2,1)
+            Then la case (2,1) ne contient aucune ressource
+            And "Alice (rose)" possede bien 0 ressource Mammouth
 
-    Scenario: Joueur collecte une ressource en posant un domino
-        Given le joueur a deja pose une steppe en (1,2)
-        And le joueur recoit un domino steppe-lac avec une ressource Mammouth
-        When le joueur pose le domino en (2,1) et (2,0)
-        Then "Alice (rose)" possede bien 1 ressource Mammouth
-
-    Scenario: Joueur collecte deux ressources sur un meme domino
-        Given le joueur a deja pose une steppe en (1,2)
-        And le joueur recoit un domino steppe-steppe avec 2 ressources Mammouth
-        When le joueur pose le domino en (3,2) et (3,1)
-        Then "Alice (rose)" possede bien 2 ressources Mammouth
-
-    # --- Destruction par le feu ---
-
-    Scenario: Feu detruit la ressource sur la case ciblee
-        Given une case steppe en (2,1) contenant une ressource Mammouth
-        And un volcan en (1,2) avec feu 1
-        When le joueur projette le jeton feu de valeur 1 sur la case (2,1)
-        Then la case (2,1) ne contient aucune ressource
-        And "Alice (rose)" possede bien 0 ressource Mammouth
-
-    Scenario: Projeter le feu sur une case sans ressource ne change rien
-        Given une case steppe en (2,1) sans icone feu
-        And un volcan en (1,2) avec feu 1
-        When le joueur projette le jeton feu de valeur 1 sur la case (2,1)
-        Then la case (2,1) ne contient aucune ressource
+        Scenario: Projeter le feu sur une case sans ressource ne change rien
+            Given une case steppe en (2,1) sans icone feu
+            And un volcan en (1,2) avec feu 1
+            When le joueur projette le jeton feu de valeur 1 sur la case (2,1)
+            Then la case (2,1) ne contient aucune ressource

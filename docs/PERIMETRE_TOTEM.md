@@ -11,11 +11,13 @@
   - Règle de majorité stricte : le joueur avec le plus de ressources d'un type récupère le totem correspondant
 - **Scoring** : calcul Découverte + 1 point par ressource + points des tuiles Totem
 
+> Note : les bonus optionnels *Empire du Feu* et *Homo Habilis* (voir PERIMETRE_DECOUVERTE.md)
+> restent disponibles en Mode Totem.
+
 ## Règles non implémentées (hors périmètre actuel)
 
 - Mode Tribu (Cro-magnons, plateau Grotte)
 - Variante 2 joueurs
-- Règles optionnelles
 
 ## Hypothèses de travail
 
