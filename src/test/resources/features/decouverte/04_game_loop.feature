@@ -1,7 +1,7 @@
 Feature: Boucle de jeu multi-tours
-    En tant que joueur
+    En tant qu'arbitre de la partie entre Alice, Bastien, Camille et David
     Je veux enchainer les tours de jeu
-    Afin de jouer une partie complete
+    Afin de mener la troupe jusqu'a la fin de la partie
 
     Rule: Chaque tour forme une nouvelle ligne de 4 dominos et vide la pioche d'autant
 

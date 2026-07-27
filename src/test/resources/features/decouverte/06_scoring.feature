@@ -1,7 +1,7 @@
 Feature: Scoring des territoires
-    En tant que joueur
-    Je veux calculer mon score en fin de partie
-    Afin de determiner le vainqueur
+    En tant qu'Alice, l'eleveuse de mammouths
+    Je veux calculer le score de mon territoire en fin de partie
+    Afin de savoir si je remporte la partie
 
     Background:
         Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)

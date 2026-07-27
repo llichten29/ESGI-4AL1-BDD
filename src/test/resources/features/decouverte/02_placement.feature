@@ -1,7 +1,7 @@
 Feature: Placement des dominos
-    En tant que joueur
+    En tant qu'Alice, l'eleveuse de mammouths
     Je veux poser mes dominos dans mon territoire
-    Afin de developper mon royaume
+    Afin d'etendre mon terrain de chasse
 
     Background:
         Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)

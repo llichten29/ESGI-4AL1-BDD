@@ -1,5 +1,5 @@
 Feature: Ressources en Mode Totem
-    En tant que joueur
+    En tant qu'Alice, l'eleveuse de mammouths
     Je veux collecter des ressources sur mes dominos
     Afin de gagner des tuiles Totem et des points
 

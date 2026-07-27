@@ -1,7 +1,7 @@
 Feature: Scoring en Mode Totem
-    En tant que joueur
-    Je veux calculer mon score total incluant ressources et totems
-    Afin de determiner le vainqueur
+    En tant qu'arbitre de la partie entre Alice, Bastien, Camille et David
+    Je veux calculer le score total de chaque joueur (ressources et totems compris)
+    Afin de departager la troupe et designer le vainqueur
 
     Background:
         Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)

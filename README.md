@@ -35,3 +35,8 @@ src/
 - **Bonus optionnels** — Empire du Feu (+10) et Homo Habilis (+5), applicables aux deux modes
 
 **Hors périmètre :** Mode Tribu, variante 2 joueurs
+
+## Personas
+
+Les scénarios sont incarnés par quatre joueurs récurrents (Alice, Bastien, Camille, David) —
+voir [docs/PERSONAS.md](docs/PERSONAS.md).

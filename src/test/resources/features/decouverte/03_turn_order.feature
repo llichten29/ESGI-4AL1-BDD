@@ -1,4 +1,7 @@
 Feature: Ordre du tour
+    En tant qu'arbitre de la partie entre Alice, Bastien, Camille et David
+    Je veux determiner l'ordre de jeu a partir des chefs de tribu
+    Afin que chaque joueur agisse au bon moment
 
     Rule: L'ordre du tour suit la position des chefs sur la ligne (numero croissant)
 

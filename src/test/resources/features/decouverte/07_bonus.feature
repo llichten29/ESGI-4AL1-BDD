@@ -1,5 +1,5 @@
 Feature: Bonus optionnels (Empire du Feu et Homo Habilis)
-    En tant que joueur
+    En tant qu'Alice, l'eleveuse de mammouths
     Je veux obtenir des points bonus en fin de partie
     Afin de recompenser la maitrise de mon territoire
 

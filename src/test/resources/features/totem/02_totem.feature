@@ -1,7 +1,10 @@
 Feature: Attribution des tuiles Totem
-    En tant que joueur
-    Je veux recuperer les tuiles Totem correspondant a mes ressources
-    Afin de marquer des points bonus
+    En tant qu'arbitre de la partie entre Alice, Bastien, Camille et David
+    Je veux attribuer chaque tuile Totem au joueur majoritaire sur la ressource
+    Afin de recompenser la domination de chaque type de ressource
+
+    # Affinites des personas (voir docs/PERSONAS.md) : Alice=Mammouth, Bastien=Poisson,
+    # Camille=Champignon, David=Silex.
 
     Background:
         Given une partie en mode Totem avec 4 joueurs et seed 42

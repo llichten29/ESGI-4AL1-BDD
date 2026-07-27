@@ -1,7 +1,7 @@
 Feature: Mise en place d'une partie
-    En tant qu'organisateur du jeu
+    En tant qu'arbitre de la partie entre Alice, Bastien, Camille et David
     Je veux initialiser une partie selon les regles
-    Afin de commencer a jouer
+    Afin que la troupe puisse commencer a jouer
 
     Rule: Une partie valide se met en place avec 3 ou 4 joueurs
 

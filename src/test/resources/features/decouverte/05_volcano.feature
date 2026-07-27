@@ -1,7 +1,7 @@
 Feature: Volcans et jetons Feu
-    En tant que joueur
+    En tant qu'Alice, l'eleveuse de mammouths
     Je veux recevoir des jetons Feu en posant des dominos volcan
-    Et les placer sur mon royaume pour marquer plus de points
+    Et les placer sur mon territoire pour marquer plus de points
 
     Background:
         Given un joueur "Alice (rose)" avec la tuile depart en position (2,2)
